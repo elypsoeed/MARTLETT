@@ -1,0 +1,20 @@
+post:
+  tags:
+    - Auth
+  operationId: issueToken
+  security: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/requests/TokenRequest.yaml"
+  responses:
+    "200":
+      description: JWT token issued
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/responses/TokenResponse.yaml"
+    "401":
+      description: Invalid credentials

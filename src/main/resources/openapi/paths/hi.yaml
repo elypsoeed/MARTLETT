@@ -1,0 +1,19 @@
+post:
+  tags:
+    - Hi
+  operationId: sayHi
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      text/plain:
+        schema:
+          $ref: "../schemas/requests/HiRequest.yaml"
+  responses:
+    "200":
+      description: Hi response
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/responses/HiResponse.yaml"

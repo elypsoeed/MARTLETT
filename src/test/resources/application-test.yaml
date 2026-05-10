@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    vault:
+      enabled: false
+  flyway:
+    locations: classpath:db/migration,classpath:db/testdata
+
+app:
+  jwt:
+    secret: 0123456789abcdef0123456789abcdef
+    access-token-ttl-seconds: 3600
+    refresh-token-ttl-seconds: 1209600
+    issuer: martlett-test
+
+test:
+  api:
+    base-url: http://localhost
+  auth:
+    admin-username: admin
+    admin-password: admin-password

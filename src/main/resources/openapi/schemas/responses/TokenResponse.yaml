@@ -1,0 +1,26 @@
+type: object
+required:
+  - accessToken
+  - accessExpiresIn
+  - refreshToken
+  - refreshExpiresIn
+  - tokenType
+properties:
+  accessToken:
+    type: string
+    nullable: false
+  accessExpiresIn:
+    type: integer
+    format: int64
+    nullable: false
+  refreshToken:
+    type: string
+    nullable: false
+  refreshExpiresIn:
+    type: integer
+    format: int64
+    nullable: false
+  tokenType:
+    type: string
+    nullable: false
+    example: Bearer

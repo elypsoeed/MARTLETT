@@ -1,0 +1,11 @@
+type: object
+required:
+  - username
+  - password
+properties:
+  username:
+    type: string
+    nullable: false
+  password:
+    type: string
+    nullable: false
