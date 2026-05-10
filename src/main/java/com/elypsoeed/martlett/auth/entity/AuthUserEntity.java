@@ -1,7 +1,7 @@
 package com.elypsoeed.martlett.auth.entity;
 
 import com.elypsoeed.martlett.auth.model.Role;
-import com.elypsoeed.martlett.core.entity.UserEntity;
+import com.elypsoeed.martlett.common.entity.UserEntity;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;

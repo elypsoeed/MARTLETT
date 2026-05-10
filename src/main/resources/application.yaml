@@ -2,7 +2,7 @@ spring:
   application:
     name: martlett
   config:
-    import: optional:vault:///secret/martlett
+    import: vault:///secret/martlett/app
   datasource:
     url: jdbc:postgresql://localhost:5432/martlett
     username: test
@@ -16,11 +16,14 @@ spring:
     vault:
       enabled: true
       uri: http://127.0.0.1:8200
-      authentication: TOKEN
-      token: ${VAULT_TOKEN:}
+      authentication: APPROLE
+      app-role:
+        role-id: ${VAULT_APPROLE_ROLE_ID}
+        secret-id: ${VAULT_APPROLE_SECRET_ID}
       fail-fast: true
 
-management:
-  health:
-    vault:
-      enabled: true
+app:
+  jwt:
+    access-token-ttl-seconds: 3600
+    refresh-token-ttl-seconds: 1209600
+    issuer: martlett

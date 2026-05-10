@@ -1,7 +1,4 @@
 spring:
-  cloud:
-    vault:
-      enabled: false
   flyway:
     locations: classpath:db/migration,classpath:db/testdata
 
