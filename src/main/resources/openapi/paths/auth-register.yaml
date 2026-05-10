@@ -1,0 +1,16 @@
+post:
+  tags:
+    - Auth
+  operationId: registerUser
+  security: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/requests/RegisterUserRequest.yaml"
+  responses:
+    "201":
+      description: User registered
+    "409":
+      description: Username or nickname already exists

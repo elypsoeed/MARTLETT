@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: martlett-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: martlett
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d martlett"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  vault:
+    image: hashicorp/vault:1.19.0
+    container_name: martlett-vault
+    restart: unless-stopped
+    cap_add:
+      - IPC_LOCK
+    command: server
+    environment:
+      SKIP_CHOWN: "true"
+    ports:
+      - "127.0.0.1:8200:8200"
+    volumes:
+      - ./ops/vault/config:/vault/config:ro
+      - vault-data:/vault/file
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "vault status -address=http://127.0.0.1:8200 >/dev/null 2>&1; code=$$?; [ \"$$code\" -eq 0 ] || [ \"$$code\" -eq 2 ]"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  postgres-data:
+  vault-data:

@@ -1,0 +1,46 @@
+type: object
+required:
+  - name
+  - surname
+  - nickname
+  - username
+  - password
+properties:
+  name:
+    type: string
+    nullable: false
+  surname:
+    type: string
+    nullable: false
+  nickname:
+    type: string
+    nullable: false
+  username:
+    type: string
+    nullable: false
+  password:
+    type: string
+    nullable: false
+  sex:
+    type: string
+    nullable: true
+    enum:
+      - MALE
+      - FEMALE
+      - OTHER
+  age:
+    type: integer
+    format: int32
+    nullable: true
+  city:
+    type: string
+    nullable: true
+  tgContact:
+    type: string
+    nullable: true
+  emailContact:
+    type: string
+    nullable: true
+  placeOfWork:
+    type: string
+    nullable: true
