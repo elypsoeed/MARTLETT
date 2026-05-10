@@ -28,10 +28,10 @@ Avoid names based on implementation mechanics, technical shape, or internal deco
 
 ## Environment And Secrets
 
-Environment-specific secrets and sensitive runtime configuration must be managed through Vault.
+Environment-specific secrets and sensitive runtime configuration must be provided externally.
 
 Do not commit secrets to the repository.
 
 Do not place real secret values directly into `application.yaml` or other tracked configuration files.
 
-When adding new sensitive configuration, wire it through Vault in the same way as the existing secret-backed settings.
+When adding new sensitive configuration, keep the application ready to consume it from environment variables or a dedicated secret manager without changing business code.

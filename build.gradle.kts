@@ -6,9 +6,6 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
-import org.springframework.boot.gradle.tasks.run.BootRun
-import java.util.Properties
-
 group = "com.elypsoeed"
 version = "0.0.1"
 
@@ -63,37 +60,6 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-
-val vaultBootstrapScript = layout.projectDirectory.file("ops/vault/bootstrap-dev.sh")
-val vaultAppEnvFile = layout.projectDirectory.file("ops/vault/.local/martlett-app.env")
-
-val bootstrapVaultDev by tasks.registering(Exec::class) {
-	group = "application"
-	description = "Bootstraps local Vault and prepares AppRole credentials for bootRun."
-	commandLine(vaultBootstrapScript.asFile.absolutePath)
-}
-
-tasks.named<BootRun>("bootRun") {
-	dependsOn(bootstrapVaultDev)
-
-	doFirst {
-		val envFile = vaultAppEnvFile.asFile
-		if (!envFile.isFile) {
-			throw GradleException("Vault app env file not found: ${envFile.absolutePath}")
-		}
-
-		val properties = Properties()
-		envFile.inputStream().use(properties::load)
-
-		listOf("VAULT_APPROLE_ROLE_ID", "VAULT_APPROLE_SECRET_ID").forEach { key ->
-			val value = properties.getProperty(key)
-			if (value.isNullOrBlank()) {
-				throw GradleException("Missing required Vault bootstrap value: $key")
-			}
-			environment(key, value)
-		}
-	}
 }
 
 checkstyle {
