@@ -1,0 +1,13 @@
+- name: Bootstrap staging host
+  hosts: staging
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Ensure Martlett base directory exists
+      ansible.builtin.file:
+        path: /opt/martlett
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
