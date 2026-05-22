@@ -11,8 +11,8 @@ paths:
     $ref: "./paths/auth-token.yaml"
   /api/auth/refresh:
     $ref: "./paths/auth-refresh.yaml"
-  /api/hi:
-    $ref: "./paths/hi.yaml"
+  /api/repositories:
+    $ref: "./paths/repositories.yaml"
 
 components:
   securitySchemes:
