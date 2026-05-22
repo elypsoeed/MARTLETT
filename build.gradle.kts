@@ -42,6 +42,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r")
 	implementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.31")
 	implementation("io.swagger.core.v3:swagger-models-jakarta:2.2.31")
 	compileOnly("org.jspecify:jspecify:1.0.0")

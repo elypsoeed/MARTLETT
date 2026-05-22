@@ -1,0 +1,23 @@
+post:
+  tags:
+    - Repositories
+  operationId: createRepository
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/requests/CreateRepositoryRequest.yaml"
+  responses:
+    "201":
+      description: Repository created
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/responses/RepositoryResponse.yaml"
+    "401":
+      description: Authentication required
+    "409":
+      description: Repository already exists

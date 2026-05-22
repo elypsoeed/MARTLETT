@@ -1,0 +1,25 @@
+type: object
+required:
+  - id
+  - name
+  - ownerNickname
+  - fullName
+  - createdTimestamp
+properties:
+  id:
+    type: integer
+    format: int64
+    nullable: false
+  name:
+    type: string
+    nullable: false
+  ownerNickname:
+    type: string
+    nullable: false
+  fullName:
+    type: string
+    nullable: false
+  createdTimestamp:
+    type: string
+    format: date-time
+    nullable: false
