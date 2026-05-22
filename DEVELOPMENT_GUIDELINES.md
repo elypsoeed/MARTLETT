@@ -35,3 +35,9 @@ Do not commit secrets to the repository.
 Do not place real secret values directly into `application.yaml` or other tracked configuration files.
 
 When adding new sensitive configuration, keep the application ready to consume it from environment variables or a dedicated secret manager without changing business code.
+
+## Local Run
+
+For local project startup, run the Gradle task `composeUpDev`.
+
+This requires Docker Compose and a local `.env` file matching the shape of `.env.example`.

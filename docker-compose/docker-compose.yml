@@ -16,6 +16,25 @@ services:
       timeout: 5s
       retries: 20
 
+  app:
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
 #  vault:
 #    image: hashicorp/vault:1.19.0
 #    container_name: martlett-vault
@@ -39,20 +58,6 @@ services:
 #      interval: 5s
 #      timeout: 5s
 #      retries: 20
-
-  app:
-    image: ghcr.io/elypsoeed/martlett:staging
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      JWT_SECRET: ${JWT_SECRET}
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-    ports:
-      - "8080:8080"
 
 
 volumes:

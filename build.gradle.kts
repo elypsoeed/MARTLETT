@@ -42,6 +42,7 @@ dependencies {
 	implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r")
 	implementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.31")
 	implementation("io.swagger.core.v3:swagger-models-jakarta:2.2.31")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:4.1.0-M4")
 	compileOnly("org.jspecify:jspecify:1.0.0")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
@@ -88,6 +89,25 @@ tasks.register("checkstyleAll") {
 	description = "Runs Checkstyle for main and test sources."
 	dependsOn(tasks.named("checkstyleMain"), tasks.named("checkstyleTest"))
 }
+
+tasks.withType<Checkstyle>().configureEach {
+    maxWarnings = 0
+}
+
+tasks.register<Exec>("composeUpDev") {
+    group = "docker-compose"
+    description = "Start development environment with hot-reload"
+    executable = "docker"
+    args(
+        "compose",
+        "--project-directory", ".",
+        "--env-file", ".env",
+        "-f", "docker-compose/docker-compose.yml",
+        "-f", "docker-compose/docker-compose.dev.yml",
+        "up", "-d", "--build"
+    )
+}
+
 
 val openApiOutputDir = layout.buildDirectory.dir("generated/openapi")
 

@@ -1,0 +1,13 @@
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+#  vault:
+#    ports:
+#      - "127.0.0.1:8200:8200"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
