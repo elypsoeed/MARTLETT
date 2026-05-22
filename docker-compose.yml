@@ -1,7 +1,8 @@
+name: martlett
+
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: martlett-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -41,7 +42,6 @@ services:
 
   app:
     image: ghcr.io/elypsoeed/martlett:staging
-    container_name: martlett-app
     restart: unless-stopped
     depends_on:
       postgres:
