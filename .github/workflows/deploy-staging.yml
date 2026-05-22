@@ -1,0 +1,24 @@
+name: Deploy Staging
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, staging, deploy]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull latest image
+        working-directory: /opt/martlett
+        run: docker compose --env-file .env pull app
+
+      - name: Recreate containers
+        working-directory: /opt/martlett
+        run: docker compose --env-file .env up -d
+
+      - name: Show status
+        working-directory: /opt/martlett
+        run: docker compose --env-file .env ps

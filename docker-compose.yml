@@ -4,42 +4,56 @@ services:
     container_name: martlett-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: martlett
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U test -d martlett"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-  vault:
-    image: hashicorp/vault:1.19.0
-    container_name: martlett-vault
-    restart: unless-stopped
-    cap_add:
-      - IPC_LOCK
-    command: server
-    environment:
-      SKIP_CHOWN: "true"
-    ports:
-      - "127.0.0.1:8200:8200"
-    volumes:
-      - ./ops/vault/config:/vault/config:ro
-      - vault-data:/vault/file
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "vault status -address=http://127.0.0.1:8200 >/dev/null 2>&1; code=$$?; [ \"$$code\" -eq 0 ] || [ \"$$code\" -eq 2 ]"
-        ]
+      test: ["CMD-SHELL", "pg_isready -U martlett -d martlett"]
       interval: 5s
       timeout: 5s
       retries: 20
+
+#  vault:
+#    image: hashicorp/vault:1.19.0
+#    container_name: martlett-vault
+#    restart: unless-stopped
+#    cap_add:
+#      - IPC_LOCK
+#    command: server
+#    environment:
+#      SKIP_CHOWN: "true"
+#    ports:
+#      - "127.0.0.1:8200:8200"
+#    volumes:
+#      - ./ops/vault/config:/vault/config:ro
+#      - vault-data:/vault/file
+#    healthcheck:
+#      test:
+#        [
+#          "CMD-SHELL",
+#          "vault status -address=http://127.0.0.1:8200 >/dev/null 2>&1; code=$$?; [ \"$$code\" -eq 0 ] || [ \"$$code\" -eq 2 ]"
+#        ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 20
+
+  app:
+    image: ghcr.io/elypsoeed/martlett:staging
+    container_name: martlett-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    ports:
+      - "8080:8080"
+
 
 volumes:
   postgres-data:
