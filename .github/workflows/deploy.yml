@@ -40,17 +40,23 @@ jobs:
           docker push ghcr.io/elypsoeed/martlett:staging
   deploy:
     runs-on: [ self-hosted, staging, deploy ]
+    needs: build-and-push
+    env:
+      COMPOSE_ARGS: >-
+        --project-directory .
+        --env-file /opt/martlett/.env
+        -f docker-compose/docker-compose.yml
+        -f docker-compose/docker-compose.staging.yml
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Pull latest image
-        run: docker compose --env-file /opt/martlett/.env pull app
+        run: docker compose $COMPOSE_ARGS pull app
 
       - name: Recreate containers
-        run: docker compose --env-file /opt/martlett/.env up -d
+        run: docker compose $COMPOSE_ARGS up -d
 
       - name: Show status
-        run: docker compose --env-file /opt/martlett/.env ps
-    needs: build-and-push
+        run: docker compose $COMPOSE_ARGS ps

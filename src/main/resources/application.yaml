@@ -20,3 +20,13 @@ app:
     access-token-ttl-seconds: 3600
     refresh-token-ttl-seconds: 1209600
     issuer: martlett
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      enabled: true
+      show-details: never

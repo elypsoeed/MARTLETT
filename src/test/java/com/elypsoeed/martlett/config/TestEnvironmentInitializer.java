@@ -21,8 +21,7 @@ public class TestEnvironmentInitializer implements ApplicationContextInitializer
 	private Path createGitStorageRoot() {
 		try {
 			return Files.createTempDirectory("martlett-git-storage-").toAbsolutePath().normalize();
-		}
-		catch (IOException exception) {
+		} catch (IOException exception) {
 			throw new IllegalStateException("Failed to create test git storage root", exception);
 		}
 	}
@@ -41,13 +40,11 @@ public class TestEnvironmentInitializer implements ApplicationContextInitializer
 				.forEach(path -> {
 					try {
 						Files.deleteIfExists(path);
-					}
-					catch (IOException exception) {
+					} catch (IOException exception) {
 						throw new IllegalStateException("Failed to delete test git storage root", exception);
 					}
 				});
-		}
-		catch (IOException exception) {
+		} catch (IOException exception) {
 			throw new IllegalStateException("Failed to delete test git storage root", exception);
 		}
 	}
