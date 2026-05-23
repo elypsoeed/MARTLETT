@@ -10,8 +10,6 @@ app:
     issuer: martlett-test
 
 test:
-  api:
-    base-url: http://localhost
-  auth:
-    admin-username: admin
-    admin-password: admin-password
+  api-base-url: http://localhost
+  admin-username: admin
+  admin-password: admin-password

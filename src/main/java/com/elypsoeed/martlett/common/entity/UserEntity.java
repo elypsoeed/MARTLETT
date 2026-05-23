@@ -25,13 +25,13 @@ public class UserEntity {
 	private Long id;
 
 	@Column(nullable = false)
-	private String name;
+	private String firstName;
 
 	@Column(nullable = false)
-	private String surname;
+	private String lastName;
 
 	@Column(nullable = false, unique = true)
-	private String nickname;
+	private String username;
 
 	@Column(name = "registration_timestamp")
 	private Instant registrationTimestamp;

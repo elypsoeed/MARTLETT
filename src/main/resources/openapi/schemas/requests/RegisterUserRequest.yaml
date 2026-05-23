@@ -6,13 +6,10 @@ required:
   - username
   - password
 properties:
-  name:
+  firstName:
     type: string
     nullable: false
-  surname:
-    type: string
-    nullable: false
-  nickname:
+  lastName:
     type: string
     nullable: false
   username:

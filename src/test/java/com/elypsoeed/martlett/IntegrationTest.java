@@ -6,6 +6,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestConstructor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,5 +19,6 @@ import java.lang.annotation.Target;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = TestEnvironmentInitializer.class)
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public @interface IntegrationTest {
 }

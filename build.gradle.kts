@@ -51,7 +51,7 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
-	testImplementation("io.rest-assured:rest-assured:5.5.6")
+    testImplementation("io.rest-assured:rest-assured:6.0.0")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
 	testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
 	testCompileOnly("org.jspecify:jspecify:1.0.0")
@@ -145,3 +145,5 @@ openApiGenerate {
 tasks.named("compileJava") {
 	dependsOn(tasks.named("openApiGenerate"))
 }
+
+

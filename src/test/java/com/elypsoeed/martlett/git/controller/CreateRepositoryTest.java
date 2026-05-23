@@ -1,20 +1,20 @@
 package com.elypsoeed.martlett.git.controller;
 
 import com.elypsoeed.martlett.IntegrationTest;
+import com.elypsoeed.martlett.auth.repository.AuthUserRepository;
 import com.elypsoeed.martlett.common.testdata.TestData;
-import com.elypsoeed.martlett.common.testdata.TestData.TestUser;
 import com.elypsoeed.martlett.common.testdata.TestDataProperties;
+import com.elypsoeed.martlett.common.testdata.model.TestUser;
 import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
-import com.elypsoeed.martlett.generated.model.RegisterUserRequest;
 import com.elypsoeed.martlett.git.config.properties.GitStorageProperties;
 import com.elypsoeed.martlett.git.entity.HostedRepositoryEntity;
 import com.elypsoeed.martlett.git.repository.HostedRepositoryRepository;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.junit.jupiter.api.TestInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,61 +24,40 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @IntegrationTest
-public class RepositoryControllerTest {
+@RequiredArgsConstructor
+public class CreateRepositoryTest {
 
-	@Autowired
-	private TestData testData;
-
-	@Autowired
-	private TestDataProperties testDataProperties;
-
-	@Autowired
-	private GitStorageProperties gitStorageProperties;
-
-	@Autowired
-	private HostedRepositoryRepository hostedRepositoryRepository;
-
-	@LocalServerPort
-	private int port;
+	private final TestData testData;
+	private final TestDataProperties testDataProperties;
+	private final GitStorageProperties gitStorageProperties;
+	private final HostedRepositoryRepository hostedRepositoryRepository;
+	private final AuthUserRepository authUserRepository;
 
 	@Test
 	void noAuth() {
-		Response response = request()
-			.body(new CreateRepositoryRequest().name("sample"))
-			.when()
-			.post("/api/repositories")
-			.then()
-			.extract()
-			.response();
+		Response response = post(null, new CreateRepositoryRequest().name("sample"));
 
 		assertThat(response.statusCode()).isEqualTo(401);
 	}
 
 	@Test
-	void success() throws IOException {
-		TestUser testUser = testData.getAuthedUser(getClass());
-		RegisterUserRequest registrationRequest = testData.newRegistrationRequest(getClass(), "shared");
-		CreateRepositoryRequest createRepositoryRequest = new CreateRepositoryRequest().name("sample-repository");
-
-		Response response = request()
-			.auth().oauth2(testUser.accessToken())
-			.body(createRepositoryRequest)
-			.when()
-			.post("/api/repositories")
-			.then()
-			.extract()
-			.response();
+	void success(TestInfo testInfo) throws IOException {
+		TestUser testUser = testData.createAuthedUser(testInfo);
+		Response response = post(testUser.accessToken(), new CreateRepositoryRequest().name("sample-repository"));
 
 		assertThat(response.statusCode()).isEqualTo(201);
 		assertThat(response.jsonPath().getLong("id")).isPositive();
 		assertThat(response.jsonPath().getString("name")).isEqualTo("sample-repository");
-		assertThat(response.jsonPath().getString("ownerNickname")).isEqualTo(registrationRequest.getNickname());
 		assertThat(response.jsonPath().getString("fullName"))
-			.isEqualTo(registrationRequest.getNickname() + "/sample-repository");
+			.isEqualTo(testUser.username() + "/sample-repository");
 		assertThat(response.jsonPath().getString("createdTimestamp")).isNotBlank();
 
+		Long ownerId = authUserRepository.findByUsername(testUser.username())
+			.orElseThrow()
+			.getUserId();
+
 		HostedRepositoryEntity hostedRepository = hostedRepositoryRepository
-			.findByOwnerNicknameAndName(registrationRequest.getNickname(), "sample-repository")
+			.findByNameAndOwnerId(response.jsonPath().getString("name"), ownerId)
 			.orElseThrow();
 
 		Path repositoryPath = Path.of(gitStorageProperties.getRootPath())
@@ -93,27 +72,12 @@ public class RepositoryControllerTest {
 	}
 
 	@Test
-	void duplicateRepositoryName() {
-		TestUser testUser = testData.getAuthedUser(getClass());
+	void rejectsDuplicateRepositoryName(TestInfo testInfo) {
+		TestUser testUser = testData.createAuthedUser(testInfo);
 		CreateRepositoryRequest createRepositoryRequest = new CreateRepositoryRequest().name("duplicate-repository");
 
-		Response firstResponse = request()
-			.auth().oauth2(testUser.accessToken())
-			.body(createRepositoryRequest)
-			.when()
-			.post("/api/repositories")
-			.then()
-			.extract()
-			.response();
-
-		Response secondResponse = request()
-			.auth().oauth2(testUser.accessToken())
-			.body(createRepositoryRequest)
-			.when()
-			.post("/api/repositories")
-			.then()
-			.extract()
-			.response();
+		Response firstResponse = post(testUser.accessToken(), createRepositoryRequest);
+		Response secondResponse = post(testUser.accessToken(), createRepositoryRequest);
 
 		assertThat(firstResponse.statusCode()).isEqualTo(201);
 		assertThat(secondResponse.statusCode()).isEqualTo(409);
@@ -121,9 +85,24 @@ public class RepositoryControllerTest {
 
 	private RequestSpecification request() {
 		return given()
-			.baseUri(testDataProperties.getApi().getBaseUrl())
-			.port(port)
+			.baseUri(testDataProperties.getApiBaseUrl())
+			.port(testDataProperties.testPort())
 			.contentType("application/json")
 			.accept("application/json");
+	}
+
+	private Response post(String accessToken, Object body) {
+		RequestSpecification request = request().body(body);
+
+		if (accessToken != null) {
+			request.auth().oauth2(accessToken);
+		}
+
+		return request
+			.when()
+			.post("/api/repositories")
+			.then()
+			.extract()
+			.response();
 	}
 }
