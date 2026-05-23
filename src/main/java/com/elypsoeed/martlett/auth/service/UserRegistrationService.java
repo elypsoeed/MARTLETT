@@ -31,7 +31,7 @@ public class UserRegistrationService {
 			throw new RegistrationConflictException("Username already exists");
 		}
 
-		if (userRepository.existsByNickname(registerUserRequest.getNickname())) {
+		if (userRepository.existsByUsername(registerUserRequest.getUsername())) {
 			throw new RegistrationConflictException("Nickname already exists");
 		}
 
@@ -45,9 +45,9 @@ public class UserRegistrationService {
 
 	private UserEntity toUserEntity(RegisterUserRequest registerUserRequest) {
 		UserEntity user = new UserEntity();
-		user.setName(registerUserRequest.getName());
-		user.setSurname(registerUserRequest.getSurname());
-		user.setNickname(registerUserRequest.getNickname());
+		user.setFirstName(registerUserRequest.getFirstName());
+		user.setLastName(registerUserRequest.getLastName());
+		user.setUsername(registerUserRequest.getUsername());
 		user.setRegistrationTimestamp(Instant.now());
 		user.setSex(mapSex(registerUserRequest));
 		user.setAge(registerUserRequest.getAge());
