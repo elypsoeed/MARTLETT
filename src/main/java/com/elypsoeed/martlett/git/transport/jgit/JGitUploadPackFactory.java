@@ -1,7 +1,7 @@
 package com.elypsoeed.martlett.git.transport.jgit;
 
 import com.elypsoeed.martlett.git.model.GitRepoMetadata;
-import com.elypsoeed.martlett.git.service.GitRepoAccessService;
+import com.elypsoeed.martlett.git.service.GitRepoAccessPolicy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.lib.Repository;
@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JGitUploadPackFactory implements UploadPackFactory<HttpServletRequest> {
 
-	private final GitRepoAccessService gitRepoAccessService;
+	private final GitRepoAccessPolicy gitRepoAccessPolicy;
 
 	@Override
 	public UploadPack create(HttpServletRequest request, Repository repository) throws ServiceNotAuthorizedException {
 		GitRepoMetadata metadata = (GitRepoMetadata) request.getAttribute(
 			JGitRepoResolver.GIT_REPO_METADATA_ATTRIBUTE
 		);
-		if (metadata != null && !gitRepoAccessService.canReadRepo(metadata, request.getRemoteUser())) {
+		if (metadata != null && !gitRepoAccessPolicy.resolve(metadata, request.getRemoteUser()).canRead()) {
 			throw new ServiceNotAuthorizedException();
 		}
 

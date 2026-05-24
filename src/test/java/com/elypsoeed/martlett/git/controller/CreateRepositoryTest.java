@@ -106,6 +106,14 @@ public class CreateRepositoryTest {
 		assertThat(secondResponse.statusCode()).isEqualTo(409);
 	}
 
+	@Test
+	void rejectsInvalidRepositoryName() {
+		TestUser testUser = testData.createAuthedUser(testInfo);
+		Response response = post(testUser.accessToken(), new CreateRepositoryRequest().name("../sample"));
+
+		assertThat(response.statusCode()).isEqualTo(400);
+	}
+
 	private RequestSpecification request() {
 		return given()
 			.baseUri(testDataProperties.getApiBaseUrl())

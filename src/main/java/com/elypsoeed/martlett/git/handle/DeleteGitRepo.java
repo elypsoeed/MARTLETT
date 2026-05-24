@@ -5,7 +5,7 @@ import com.elypsoeed.martlett.auth.repository.AuthUserRepository;
 import com.elypsoeed.martlett.git.entity.GitRepoEntity;
 import com.elypsoeed.martlett.git.exception.GitRepoNotFoundException;
 import com.elypsoeed.martlett.git.repository.GitRepoRepository;
-import com.elypsoeed.martlett.git.storage.GitRepoStorage;
+import com.elypsoeed.martlett.git.storage.GitRepoStorageTransactionCoordinator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ public class DeleteGitRepo {
 
 	private final AuthUserRepository authUserRepository;
 	private final GitRepoRepository gitRepoRepository;
-	private final GitRepoStorage gitRepoStorage;
+	private final GitRepoStorageTransactionCoordinator gitRepoStorageTransactionCoordinator;
 
 	public void execute(String ownerUsername, String repositoryName) {
 		AuthUserEntity authUser = authUserRepository.findByUsername(ownerUsername)
@@ -27,6 +27,6 @@ public class DeleteGitRepo {
 			.orElseThrow(() -> new GitRepoNotFoundException("Repository not found"));
 
 		gitRepoRepository.delete(gitRepo);
-		gitRepoStorage.deleteRepoStorage(gitRepo.getStorageRelativePath());
+		gitRepoStorageTransactionCoordinator.deleteRepoStorageAfterCommit(gitRepo.getStorageRelativePath());
 	}
 }

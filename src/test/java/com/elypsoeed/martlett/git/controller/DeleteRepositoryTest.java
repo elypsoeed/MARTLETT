@@ -82,6 +82,14 @@ public class DeleteRepositoryTest {
 		assertThat(response.statusCode()).isEqualTo(404);
 	}
 
+	@Test
+	void rejectsInvalidRepositoryName() {
+		TestUser testUser = testData.createAuthedUser(testInfo);
+		Response response = delete(testUser.accessToken(), "bad!name");
+
+		assertThat(response.statusCode()).isEqualTo(400);
+	}
+
 	private RequestSpecification request() {
 		return given()
 			.baseUri(testDataProperties.getApiBaseUrl())

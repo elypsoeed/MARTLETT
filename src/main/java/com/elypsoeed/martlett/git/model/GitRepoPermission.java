@@ -3,7 +3,6 @@ package com.elypsoeed.martlett.git.model;
 public enum GitRepoPermission {
 	REPOSITORY_READ,
 	REPOSITORY_WRITE,
-	REPOSITORY_ADMIN,
 	MERGE_REQUEST_READ,
 	MERGE_REQUEST_WRITE,
 	MERGE_REQUEST_APPROVE,
