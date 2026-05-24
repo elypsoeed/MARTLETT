@@ -6,9 +6,10 @@ import com.elypsoeed.martlett.common.testdata.TestData;
 import com.elypsoeed.martlett.common.testdata.TestDataProperties;
 import com.elypsoeed.martlett.common.testdata.model.TestUser;
 import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
+import com.elypsoeed.martlett.generated.model.RepositoryVisibility;
 import com.elypsoeed.martlett.git.config.properties.GitStorageProperties;
-import com.elypsoeed.martlett.git.entity.GitRepositoryEntity;
-import com.elypsoeed.martlett.git.repository.GitRepositoryRepository;
+import com.elypsoeed.martlett.git.entity.GitRepoEntity;
+import com.elypsoeed.martlett.git.repository.GitRepoRepository;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class CreateRepositoryTest {
 	private final TestData testData;
 	private final TestDataProperties testDataProperties;
 	private final GitStorageProperties gitStorageProperties;
-	private final GitRepositoryRepository gitRepositoryRepository;
+	private final GitRepoRepository gitRepoRepository;
 	private final AuthUserRepository authUserRepository;
 	private TestInfo testInfo;
 
@@ -57,25 +58,40 @@ public class CreateRepositoryTest {
 		assertThat(response.jsonPath().getString("name")).isEqualTo("sample-repository");
 		assertThat(response.jsonPath().getString("fullName"))
 			.isEqualTo(testUser.username() + "/sample-repository");
+		assertThat(response.jsonPath().getString("visibility")).isEqualTo("PRIVATE");
 		assertThat(response.jsonPath().getString("createdTimestamp")).isNotBlank();
 
 		Long ownerId = authUserRepository.findByUsername(testUser.username())
 			.orElseThrow()
 			.getUserId();
 
-		GitRepositoryEntity gitRepository = gitRepositoryRepository
+		GitRepoEntity gitRepo = gitRepoRepository
 			.findByNameAndOwnerId(response.jsonPath().getString("name"), ownerId)
 			.orElseThrow();
 
 		Path repositoryPath = Path.of(gitStorageProperties.getRootPath())
 			.toAbsolutePath()
 			.normalize()
-			.resolve(gitRepository.getStorageRelativePath());
+			.resolve(gitRepo.getStorageRelativePath());
 
 		assertThat(Files.exists(repositoryPath.resolve("HEAD"))).isTrue();
 		try (var repository = new FileRepositoryBuilder().setGitDir(repositoryPath.toFile()).build()) {
 			assertThat(repository.isBare()).isTrue();
 		}
+	}
+
+	@Test
+	void createsPublicRepository() {
+		TestUser testUser = testData.createAuthedUser(testInfo);
+		Response response = post(
+			testUser.accessToken(),
+			new CreateRepositoryRequest()
+				.name("public-repository")
+				.visibility(RepositoryVisibility.PUBLIC)
+		);
+
+		assertThat(response.statusCode()).isEqualTo(201);
+		assertThat(response.jsonPath().getString("visibility")).isEqualTo("PUBLIC");
 	}
 
 	@Test

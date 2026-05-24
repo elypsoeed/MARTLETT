@@ -22,6 +22,8 @@ repositoriesPath:
         description: Authentication required
       "409":
         description: Repository already exists
+      "400":
+        description: Invalid request
 
 repositoryByNamePath:
   parameters:

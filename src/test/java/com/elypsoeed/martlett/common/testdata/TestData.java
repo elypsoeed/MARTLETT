@@ -60,10 +60,14 @@ public class TestData {
         );
     }
 
-    public Response createRepository(TestUser testUser, String repositoryName) {
+    public Response createPrivateRepository(TestUser testUser, String repositoryName) {
+        return createRepositoryFromRequest(testUser, new CreateRepositoryRequest().name(repositoryName));
+    }
+
+    public Response createRepositoryFromRequest(TestUser testUser, CreateRepositoryRequest createRepositoryRequest) {
         Response response = request()
                 .auth().oauth2(testUser.accessToken())
-                .body(new CreateRepositoryRequest().name(repositoryName))
+                .body(createRepositoryRequest)
                 .when()
                 .post("/api/repositories")
                 .then()
