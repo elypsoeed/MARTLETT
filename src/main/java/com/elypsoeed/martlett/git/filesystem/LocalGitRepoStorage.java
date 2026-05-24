@@ -1,8 +1,8 @@
 package com.elypsoeed.martlett.git.filesystem;
 
 import com.elypsoeed.martlett.git.config.properties.GitStorageProperties;
-import com.elypsoeed.martlett.git.exception.RepositoryConflictException;
-import com.elypsoeed.martlett.git.storage.RepositoryStorage;
+import com.elypsoeed.martlett.git.exception.GitRepoConflictException;
+import com.elypsoeed.martlett.git.storage.GitRepoStorage;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.Git;
 import org.springframework.stereotype.Component;
@@ -15,17 +15,17 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class LocalRepositoryStorage implements RepositoryStorage, RepositoryPathProvider {
+public class LocalGitRepoStorage implements GitRepoStorage, GitRepoPathProvider {
 
 	private final GitStorageProperties gitStorageProperties;
 
 	@Override
-	public String createRepositoryStorage(long ownerId, String repositoryName) {
+	public String createRepoStorage(long ownerId, String repositoryName) {
 		String storageRelativePath = ownerId + "/" + repositoryName + ".git";
 		Path repositoryPath = repositoryPath(storageRelativePath);
 
 		if (Files.exists(repositoryPath)) {
-			throw new RepositoryConflictException("Repository already exists");
+			throw new GitRepoConflictException("Repository already exists");
 		}
 
 		try {
@@ -41,7 +41,7 @@ public class LocalRepositoryStorage implements RepositoryStorage, RepositoryPath
 	}
 
 	@Override
-	public void deleteRepositoryStorage(String storageRelativePath) {
+	public void deleteRepoStorage(String storageRelativePath) {
 		Path repositoryPath = repositoryPath(storageRelativePath);
 		if (!Files.exists(repositoryPath)) {
 			return;

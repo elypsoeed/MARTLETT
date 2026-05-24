@@ -1,6 +1,7 @@
 package com.elypsoeed.martlett.auth.config;
 
 import com.elypsoeed.martlett.auth.config.properties.JwtProperties;
+import com.elypsoeed.martlett.git.transport.jgit.JGitRepoReadAuthorizationManager;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
@@ -31,6 +32,7 @@ public class SecurityConfiguration {
 
 	private final JwtProperties jwtProperties;
 	private final JwtDecoderFactory jwtDecoderFactory;
+	private final JGitRepoReadAuthorizationManager jGitRepoReadAuthorizationManager;
 
 	@Bean
 	@Order(1)
@@ -39,7 +41,7 @@ public class SecurityConfiguration {
                 .securityMatcher("/git/**", "/**/info/refs", "/**/git-upload-pack", "/**/git-receive-pack")
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().access(jGitRepoReadAuthorizationManager))
                 .httpBasic(basic -> {
                 })
                 .build();

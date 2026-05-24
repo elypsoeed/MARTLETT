@@ -4,6 +4,7 @@ required:
   - name
   - ownerNickname
   - fullName
+  - visibility
   - createdTimestamp
 properties:
   id:
@@ -19,6 +20,8 @@ properties:
   fullName:
     type: string
     nullable: false
+  visibility:
+    $ref: "../RepositoryVisibility.yaml"
   createdTimestamp:
     type: string
     format: date-time

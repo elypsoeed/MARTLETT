@@ -9,16 +9,16 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
-public class GitHttpConfiguration {
+public class JGitHttpConfiguration {
 
-	private final GitRepositoryResolver gitRepositoryResolver;
+	private final JGitRepoResolver jGitRepoResolver;
 	private final JGitUploadPackFactory jGitUploadPackFactory;
 	private final JGitReceivePackFactory jGitReceivePackFactory;
 
 	@Bean
 	ServletRegistrationBean<@NonNull GitServlet> gitServletRegistration() {
 		GitServlet gitServlet = new GitServlet();
-		gitServlet.setRepositoryResolver(gitRepositoryResolver);
+		gitServlet.setRepositoryResolver(jGitRepoResolver);
 		gitServlet.setUploadPackFactory(jGitUploadPackFactory);
 		gitServlet.setReceivePackFactory(jGitReceivePackFactory);
 

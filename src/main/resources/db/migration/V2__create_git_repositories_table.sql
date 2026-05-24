@@ -4,6 +4,7 @@ create table git_repositories (
     name varchar(255) not null,
     storage_relative_path varchar(1024) not null unique,
     created_timestamp timestamp with time zone not null,
+    visibility varchar(32) not null default 'PRIVATE',
     constraint fk_hosted_repositories_owner_user_id
         foreign key (owner_user_id) references usrs (id) on delete cascade,
     constraint uq_hosted_repositories_owner_name unique (owner_user_id, name)

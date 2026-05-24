@@ -6,8 +6,8 @@ import com.elypsoeed.martlett.common.testdata.TestData;
 import com.elypsoeed.martlett.common.testdata.TestDataProperties;
 import com.elypsoeed.martlett.common.testdata.model.TestUser;
 import com.elypsoeed.martlett.git.config.properties.GitStorageProperties;
-import com.elypsoeed.martlett.git.entity.GitRepositoryEntity;
-import com.elypsoeed.martlett.git.repository.GitRepositoryRepository;
+import com.elypsoeed.martlett.git.entity.GitRepoEntity;
+import com.elypsoeed.martlett.git.repository.GitRepoRepository;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class DeleteRepositoryTest {
 	private final TestData testData;
 	private final TestDataProperties testDataProperties;
 	private final GitStorageProperties gitStorageProperties;
-	private final GitRepositoryRepository gitRepositoryRepository;
+	private final GitRepoRepository gitRepoRepository;
 	private final AuthUserRepository authUserRepository;
 	private TestInfo testInfo;
 
@@ -47,7 +47,7 @@ public class DeleteRepositoryTest {
 	@Test
 	void success() {
 		TestUser testUser = testData.createAuthedUser(testInfo);
-		Response createResponse = testData.createRepository(testUser, "repository-to-delete");
+		Response createResponse = testData.createPrivateRepository(testUser, "repository-to-delete");
 
 		assertThat(createResponse.statusCode()).isEqualTo(201);
 
@@ -55,14 +55,14 @@ public class DeleteRepositoryTest {
 			.orElseThrow()
 			.getUserId();
 
-		GitRepositoryEntity gitRepository = gitRepositoryRepository
+		GitRepoEntity gitRepo = gitRepoRepository
 			.findByNameAndOwnerId(createResponse.jsonPath().getString("name"), ownerId)
 			.orElseThrow();
 
 		Path repositoryPath = Path.of(gitStorageProperties.getRootPath())
 			.toAbsolutePath()
 			.normalize()
-			.resolve(gitRepository.getStorageRelativePath());
+			.resolve(gitRepo.getStorageRelativePath());
 
 		Response deleteResponse = delete(
 			testUser.accessToken(),
@@ -70,7 +70,7 @@ public class DeleteRepositoryTest {
 		);
 
 		assertThat(deleteResponse.statusCode()).isEqualTo(204);
-		assertThat(gitRepositoryRepository.findByNameAndOwnerId(createResponse.jsonPath().getString("name"), ownerId)).isEmpty();
+		assertThat(gitRepoRepository.findByNameAndOwnerId(createResponse.jsonPath().getString("name"), ownerId)).isEmpty();
 		assertThat(Files.exists(repositoryPath)).isFalse();
 	}
 

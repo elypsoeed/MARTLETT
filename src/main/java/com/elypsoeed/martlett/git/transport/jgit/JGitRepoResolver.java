@@ -1,7 +1,8 @@
 package com.elypsoeed.martlett.git.transport.jgit;
 
-import com.elypsoeed.martlett.git.filesystem.GitRepositoryPathLocation;
-import com.elypsoeed.martlett.git.filesystem.GitRepositoryPathLocator;
+import com.elypsoeed.martlett.git.filesystem.GitRepoPathLocation;
+import com.elypsoeed.martlett.git.filesystem.GitRepoPathLocator;
+import com.elypsoeed.martlett.git.model.GitRepoMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
@@ -16,11 +17,12 @@ import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
-public class GitRepositoryResolver implements RepositoryResolver<HttpServletRequest> {
+public class JGitRepoResolver implements RepositoryResolver<HttpServletRequest> {
 
 	private static final Pattern REPOSITORY_PATH_PATTERN = Pattern.compile("^([^/]+)/([^/]+)\\.git$");
+	static final String GIT_REPO_METADATA_ATTRIBUTE = GitRepoMetadata.class.getName();
 
-	private final GitRepositoryPathLocator gitRepositoryPathLocator;
+	private final GitRepoPathLocator gitRepoPathLocator;
 
 	@Override
 	public Repository open(HttpServletRequest request, String name) throws RepositoryNotFoundException {
@@ -32,12 +34,13 @@ public class GitRepositoryResolver implements RepositoryResolver<HttpServletRequ
 		String ownerUsername = matcher.group(1);
 		String repositoryName = matcher.group(2);
 
-		GitRepositoryPathLocation repositoryLocation = gitRepositoryPathLocator.findByNameAndOwner(repositoryName, ownerUsername)
+		GitRepoPathLocation gitRepoPathLocation = gitRepoPathLocator.findByNameAndOwner(repositoryName, ownerUsername)
 			.orElseThrow(() -> new RepositoryNotFoundException(name));
+		request.setAttribute(GIT_REPO_METADATA_ATTRIBUTE, gitRepoPathLocation.metadata());
 
 		try {
 			return new FileRepositoryBuilder()
-				.setGitDir(repositoryLocation.absolutePath().toFile())
+				.setGitDir(gitRepoPathLocation.absolutePath().toFile())
 				.build();
 		} catch (IOException exception) {
 			throw new RepositoryNotFoundException(name);
