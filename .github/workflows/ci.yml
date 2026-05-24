@@ -3,6 +3,14 @@ name: CI
 on:
   pull_request:
     branches: ["master"]
+    paths:
+      - "src/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      - "config/checkstyle/**"
 
 jobs:
   checkstyle:

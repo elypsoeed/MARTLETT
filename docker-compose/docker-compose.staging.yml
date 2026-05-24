@@ -1,3 +1,5 @@
 services:
   app:
     image: ghcr.io/elypsoeed/martlett:staging
+    environment:
+      APP_FLYWAY_RERUN_MIGRATIONS: "true"
