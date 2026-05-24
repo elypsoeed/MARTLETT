@@ -11,15 +11,21 @@ import java.util.Arrays;
 @Configuration
 public class DatabaseMigrationConfiguration {
 
-	@Bean(initMethod = "migrate")
+	@Bean
 	Flyway flyway(DataSource dataSource, Environment environment) {
 		String locations = environment.getProperty("spring.flyway.locations", "classpath:db/migration");
-		return Flyway.configure()
+		boolean cleanOnStart = environment.getProperty("app.flyway.rerun-migrations", Boolean.class, false);
+		Flyway flyway = Flyway.configure()
 			.dataSource(dataSource)
 			.locations(Arrays.stream(locations.split(","))
 				.map(String::trim)
 				.filter(location -> !location.isEmpty())
 				.toArray(String[]::new))
 			.load();
+		if (cleanOnStart) {
+			flyway.clean();
+		}
+		flyway.migrate();
+		return flyway;
 	}
 }
