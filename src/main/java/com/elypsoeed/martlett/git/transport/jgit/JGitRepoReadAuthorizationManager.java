@@ -1,6 +1,6 @@
 package com.elypsoeed.martlett.git.transport.jgit;
 
-import com.elypsoeed.martlett.git.service.GitRepoAccessService;
+import com.elypsoeed.martlett.git.service.GitRepoAccessPolicy;
 import com.elypsoeed.martlett.git.service.GitRepoLookupService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class JGitRepoReadAuthorizationManager implements AuthorizationManager<Re
 	private static final Pattern REQUEST_PATH_PATTERN = Pattern.compile("^/git/([^/]+)/([^/]+)\\.git(?:/.*)?$");
 
 	private final GitRepoLookupService gitRepoLookupService;
-	private final GitRepoAccessService gitRepoAccessService;
+	private final GitRepoAccessPolicy gitRepoAccessPolicy;
 
 	@Override
 	public AuthorizationResult authorize(
@@ -40,7 +40,7 @@ public class JGitRepoReadAuthorizationManager implements AuthorizationManager<Re
 		String repositoryName = matcher.group(2);
 
 		return new AuthorizationDecision(gitRepoLookupService.findByNameAndOwner(repositoryName, ownerUsername)
-			.map(metadata -> gitRepoAccessService.canReadRepo(metadata, authenticatedUsername(authentication.get())))
+			.map(metadata -> gitRepoAccessPolicy.resolve(metadata, authenticatedUsername(authentication.get())).canRead())
 			.orElse(true));
 	}
 

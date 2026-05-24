@@ -1,6 +1,7 @@
 package com.elypsoeed.martlett.git.service;
 
 import com.elypsoeed.martlett.git.entity.GitRepoEntity;
+import com.elypsoeed.martlett.git.exception.InvalidGitRepoNameException;
 import com.elypsoeed.martlett.git.handle.CreateGitRepo;
 import com.elypsoeed.martlett.git.handle.DeleteGitRepo;
 import com.elypsoeed.martlett.git.model.GitRepoVisibility;
@@ -37,7 +38,7 @@ public class GitRepoManagementService {
 
 	private void validateRepositoryName(String repositoryName) {
 		if (!REPOSITORY_NAME_PATTERN.matcher(repositoryName).matches()) {
-			throw new IllegalArgumentException("Invalid repository name");
+			throw new InvalidGitRepoNameException("Invalid repository name");
 		}
 	}
 }

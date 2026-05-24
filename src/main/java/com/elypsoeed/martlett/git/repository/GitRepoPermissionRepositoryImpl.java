@@ -6,8 +6,6 @@ import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
-import java.util.Collection;
-
 public class GitRepoPermissionRepositoryImpl implements GitRepoPermissionRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
@@ -21,7 +19,7 @@ public class GitRepoPermissionRepositoryImpl implements GitRepoPermissionReposit
 		Long repositoryId,
 		GitRepoPermissionSubjectType subjectType,
 		Long subjectId,
-		Collection<GitRepoPermission> permissions
+		GitRepoPermission permissionValue
 	) {
 		QGitRepoPermissionEntity permission = QGitRepoPermissionEntity.gitRepoPermissionEntity;
 
@@ -32,7 +30,7 @@ public class GitRepoPermissionRepositoryImpl implements GitRepoPermissionReposit
 				permission.repo.id.eq(repositoryId),
 				permission.subjectType.eq(subjectType),
 				permission.subjectId.eq(subjectId),
-				permission.permission.in(permissions)
+				permission.permission.eq(permissionValue)
 			)
 			.fetchFirst();
 
