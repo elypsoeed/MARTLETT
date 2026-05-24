@@ -6,6 +6,7 @@ import java.util.List;
 
 public record TestUser(
         String username,
+        String password,
         String accessToken,
         String refreshToken,
         long accessExpiresIn,

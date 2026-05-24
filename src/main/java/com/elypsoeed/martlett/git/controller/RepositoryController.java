@@ -2,8 +2,8 @@ package com.elypsoeed.martlett.git.controller;
 
 import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
 import com.elypsoeed.martlett.generated.model.RepositoryResponse;
-import com.elypsoeed.martlett.git.entity.HostedRepositoryEntity;
-import com.elypsoeed.martlett.git.service.RepositoryService;
+import com.elypsoeed.martlett.git.entity.GitRepositoryEntity;
+import com.elypsoeed.martlett.git.service.GitRepositoryManagementService;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
@@ -21,32 +21,32 @@ import java.time.ZoneOffset;
 @RequiredArgsConstructor
 public class RepositoryController {
 
-	private final RepositoryService repositoryService;
+	private final GitRepositoryManagementService gitRepositoryManagementService;
 
 	@PostMapping(path = "/api/repositories")
 	public ResponseEntity<@NonNull RepositoryResponse> createRepository(@RequestBody CreateRepositoryRequest createRepositoryRequest) {
-		HostedRepositoryEntity hostedRepository = repositoryService.createRepository(
+		GitRepositoryEntity gitRepository = gitRepositoryManagementService.createRepository(
 			SecurityContextHolder.getContext().getAuthentication().getName(),
 			createRepositoryRequest.getName()
 		);
-		return ResponseEntity.status(HttpStatus.CREATED).body(toRepositoryResponse(hostedRepository));
+		return ResponseEntity.status(HttpStatus.CREATED).body(toRepositoryResponse(gitRepository));
 	}
 
 	@DeleteMapping(path = "/api/repositories/{repositoryName}")
 	public ResponseEntity<@NonNull Void> deleteRepository(@PathVariable String repositoryName) {
-		repositoryService.deleteRepository(
+		gitRepositoryManagementService.deleteRepository(
 			SecurityContextHolder.getContext().getAuthentication().getName(),
 			repositoryName
 		);
 		return ResponseEntity.noContent().build();
 	}
 
-	private RepositoryResponse toRepositoryResponse(HostedRepositoryEntity hostedRepository) {
+	private RepositoryResponse toRepositoryResponse(GitRepositoryEntity gitRepository) {
 		return new RepositoryResponse()
-			.id(hostedRepository.getId())
-			.name(hostedRepository.getName())
-			.ownerNickname(hostedRepository.getOwner().getUsername())
-			.fullName(hostedRepository.getOwner().getUsername() + "/" + hostedRepository.getName())
-			.createdTimestamp(hostedRepository.getCreatedTimestamp().atOffset(ZoneOffset.UTC));
+			.id(gitRepository.getId())
+			.name(gitRepository.getName())
+			.ownerNickname(gitRepository.getOwner().getUsername())
+			.fullName(gitRepository.getOwner().getUsername() + "/" + gitRepository.getName())
+			.createdTimestamp(gitRepository.getCreatedTimestamp().atOffset(ZoneOffset.UTC));
 	}
 }

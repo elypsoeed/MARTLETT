@@ -1,6 +1,6 @@
 package com.elypsoeed.martlett.git.service;
 
-import com.elypsoeed.martlett.git.entity.HostedRepositoryEntity;
+import com.elypsoeed.martlett.git.entity.GitRepositoryEntity;
 import com.elypsoeed.martlett.git.handle.CreateRepository;
 import com.elypsoeed.martlett.git.handle.DeleteRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
-public class RepositoryService {
+public class GitRepositoryManagementService {
 
 	private static final Pattern REPOSITORY_NAME_PATTERN = Pattern.compile("^[A-Za-z0-9._-]+$");
 
@@ -19,7 +19,7 @@ public class RepositoryService {
 	private final DeleteRepository deleteRepository;
 
 	@Transactional
-	public HostedRepositoryEntity createRepository(String ownerUsername, String repositoryName) {
+	public GitRepositoryEntity createRepository(String ownerUsername, String repositoryName) {
 		validateRepositoryName(repositoryName);
 		return createRepository.execute(ownerUsername, repositoryName);
 	}

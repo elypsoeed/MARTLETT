@@ -56,7 +56,11 @@ public class AuthControllerTest {
                 testDataProperties.getAdminUsername(),
                 testDataProperties.getAdminPassword()
         );
-        TestUser admin = toTestUser(testDataProperties.getAdminUsername(), tokenResponse);
+        TestUser admin = toTestUser(
+                testDataProperties.getAdminUsername(),
+                testDataProperties.getAdminPassword(),
+                tokenResponse
+        );
 
         assertThat(admin.roles()).containsExactlyInAnyOrder(Role.USER, Role.ADMIN);
     }
@@ -156,7 +160,7 @@ public class AuthControllerTest {
         RegisterUserRequest registerUserRequest = registerUser(testInfo);
         TokenResponse tokenResponse = issueToken(registerUserRequest.getUsername(), registerUserRequest.getPassword());
 
-        return toTestUser(registerUserRequest.getUsername(), tokenResponse);
+        return toTestUser(registerUserRequest.getUsername(), registerUserRequest.getPassword(), tokenResponse);
     }
 
     private Response post(String path, Object body) {
@@ -177,11 +181,12 @@ public class AuthControllerTest {
                 .accept("application/json");
     }
 
-    private TestUser toTestUser(String username, TokenResponse tokenResponse) {
+    private TestUser toTestUser(String username, String password, TokenResponse tokenResponse) {
         Jwt accessJwt = jwtDecoderFactory.createAccessTokenDecoder().decode(tokenResponse.getAccessToken());
 
         return new TestUser(
                 username,
+                password,
                 tokenResponse.getAccessToken(),
                 tokenResponse.getRefreshToken(),
                 tokenResponse.getAccessExpiresIn(),
