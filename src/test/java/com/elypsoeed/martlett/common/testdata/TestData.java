@@ -1,6 +1,7 @@
 package com.elypsoeed.martlett.common.testdata;
 
 import com.elypsoeed.martlett.auth.config.JwtDecoderFactory;
+import com.elypsoeed.martlett.auth.repository.AuthUserRepository;
 import com.elypsoeed.martlett.auth.model.Role;
 import com.elypsoeed.martlett.common.testdata.model.TestUser;
 import com.elypsoeed.martlett.common.testdata.model.UserCredentials;
@@ -8,6 +9,14 @@ import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
 import com.elypsoeed.martlett.generated.model.RegisterUserRequest;
 import com.elypsoeed.martlett.generated.model.TokenRequest;
 import com.elypsoeed.martlett.generated.model.TokenResponse;
+import com.elypsoeed.martlett.git.entity.GitRepoPermissionEntity;
+import com.elypsoeed.martlett.git.entity.GitRepoRoleEntity;
+import com.elypsoeed.martlett.git.model.GitRepoPermission;
+import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
+import com.elypsoeed.martlett.git.model.GitRepoRole;
+import com.elypsoeed.martlett.git.repository.GitRepoPermissionRepository;
+import com.elypsoeed.martlett.git.repository.GitRepoRepository;
+import com.elypsoeed.martlett.git.repository.GitRepoRoleRepository;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +38,10 @@ public class TestData {
 
     private final JwtDecoderFactory jwtDecoderFactory;
     private final TestDataProperties testDataProperties;
+    private final AuthUserRepository authUserRepository;
+    private final GitRepoRepository gitRepoRepository;
+    private final GitRepoPermissionRepository gitRepoPermissionRepository;
+    private final GitRepoRoleRepository gitRepoRoleRepository;
 
     public TestUser createAuthedUser(TestInfo testInfo) {
         UserCredentials credentials = createRegisteredUser(testInfo);
@@ -91,6 +104,44 @@ public class TestData {
                         testUser.password()
                 ))
                 .call();
+    }
+
+    public void grantPermission(
+            String ownerUsername,
+            String repositoryName,
+            String collaboratorUsername,
+            GitRepoPermission permissionType
+    ) {
+        var owner = authUserRepository.findByUsername(ownerUsername).orElseThrow();
+        var collaborator = authUserRepository.findByUsername(collaboratorUsername).orElseThrow();
+        var gitRepo = gitRepoRepository.findByNameAndOwnerId(repositoryName, owner.getUserId()).orElseThrow();
+
+        GitRepoPermissionEntity permission = new GitRepoPermissionEntity();
+        permission.setRepo(gitRepo);
+        permission.setSubjectType(GitRepoPermissionSubjectType.USER);
+        permission.setSubjectId(collaborator.getUserId());
+        permission.setPermission(permissionType);
+
+        gitRepoPermissionRepository.save(permission);
+    }
+
+    public void grantRole(
+            String ownerUsername,
+            String repositoryName,
+            String collaboratorUsername,
+            GitRepoRole roleType
+    ) {
+        var owner = authUserRepository.findByUsername(ownerUsername).orElseThrow();
+        var collaborator = authUserRepository.findByUsername(collaboratorUsername).orElseThrow();
+        var gitRepo = gitRepoRepository.findByNameAndOwnerId(repositoryName, owner.getUserId()).orElseThrow();
+
+        GitRepoRoleEntity role = new GitRepoRoleEntity();
+        role.setRepo(gitRepo);
+        role.setSubjectType(GitRepoPermissionSubjectType.USER);
+        role.setSubjectId(collaborator.getUserId());
+        role.setRole(roleType);
+
+        gitRepoRoleRepository.save(role);
     }
 
     private void sendRegisterUserRequest(RegisterUserRequest registerUserRequest) {

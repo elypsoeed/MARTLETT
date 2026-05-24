@@ -1,20 +1,13 @@
 package com.elypsoeed.martlett.git.controller;
 
 import com.elypsoeed.martlett.IntegrationTest;
-import com.elypsoeed.martlett.auth.repository.AuthUserRepository;
 import com.elypsoeed.martlett.common.testdata.TestData;
 import com.elypsoeed.martlett.common.testdata.TestDataProperties;
 import com.elypsoeed.martlett.common.testdata.model.TestUser;
 import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
 import com.elypsoeed.martlett.generated.model.RepositoryVisibility;
-import com.elypsoeed.martlett.git.entity.GitRepoPermissionEntity;
-import com.elypsoeed.martlett.git.entity.GitRepoRoleEntity;
 import com.elypsoeed.martlett.git.model.GitRepoPermission;
-import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
 import com.elypsoeed.martlett.git.model.GitRepoRole;
-import com.elypsoeed.martlett.git.repository.GitRepoPermissionRepository;
-import com.elypsoeed.martlett.git.repository.GitRepoRepository;
-import com.elypsoeed.martlett.git.repository.GitRepoRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -36,10 +29,6 @@ public class CloneRepositoryTest {
 
 	private final TestData testData;
 	private final TestDataProperties testDataProperties;
-	private final GitRepoRepository gitRepoRepository;
-	private final GitRepoPermissionRepository gitRepoPermissionRepository;
-	private final GitRepoRoleRepository gitRepoRoleRepository;
-	private final AuthUserRepository authUserRepository;
 	private TestInfo testInfo;
 
 	@BeforeEach
@@ -100,7 +89,7 @@ public class CloneRepositoryTest {
 		TestUser collaborator = testData.createAuthedUser(testInfo);
 		String REPOSITORY_NAME = "clone-private-collaborator";
 		testData.createPrivateRepository(owner, REPOSITORY_NAME);
-		grantPermission(owner.username(), REPOSITORY_NAME, collaborator.username(), GitRepoPermission.REPOSITORY_READ);
+		testData.grantPermission(owner.username(), REPOSITORY_NAME, collaborator.username(), GitRepoPermission.REPOSITORY_READ);
 
 		Path cloneDirectory = tempDir.resolve("repository");
 		try (var git = testData.cloneRepository(
@@ -120,7 +109,7 @@ public class CloneRepositoryTest {
 		TestUser collaborator = testData.createAuthedUser(testInfo);
 		String repositoryName = "clone-private-writer";
 		testData.createPrivateRepository(owner, repositoryName);
-		grantRole(owner.username(), repositoryName, collaborator.username(), GitRepoRole.WRITER);
+		testData.grantRole(owner.username(), repositoryName, collaborator.username(), GitRepoRole.WRITER);
 
 		try (var git = testData.cloneRepository(
 			collaborator,
@@ -139,7 +128,7 @@ public class CloneRepositoryTest {
 		TestUser collaborator = testData.createAuthedUser(testInfo);
 		String repositoryName = "clone-private-write-only";
 		testData.createPrivateRepository(owner, repositoryName);
-		grantPermission(owner.username(), repositoryName, collaborator.username(), GitRepoPermission.REPOSITORY_WRITE);
+		testData.grantPermission(owner.username(), repositoryName, collaborator.username(), GitRepoPermission.REPOSITORY_WRITE);
 
 		assertThatThrownBy(() -> testData.cloneRepository(
 			collaborator,
@@ -166,43 +155,5 @@ public class CloneRepositoryTest {
 			.setURI(testDataProperties.gitRepositoryUrl(ownerUsername, repositoryName))
 			.setDirectory(directory.toFile())
 			.call();
-	}
-
-	private void grantPermission(
-		String ownerUsername,
-		String repositoryName,
-		String collaboratorUsername,
-		GitRepoPermission permissionType
-	) {
-		var owner = authUserRepository.findByUsername(ownerUsername).orElseThrow();
-		var collaborator = authUserRepository.findByUsername(collaboratorUsername).orElseThrow();
-		var gitRepo = gitRepoRepository.findByNameAndOwnerId(repositoryName, owner.getUserId()).orElseThrow();
-
-		GitRepoPermissionEntity permission = new GitRepoPermissionEntity();
-		permission.setRepo(gitRepo);
-		permission.setSubjectType(GitRepoPermissionSubjectType.USER);
-		permission.setSubjectId(collaborator.getUserId());
-		permission.setPermission(permissionType);
-
-		gitRepoPermissionRepository.save(permission);
-	}
-
-	private void grantRole(
-		String ownerUsername,
-		String repositoryName,
-		String collaboratorUsername,
-		GitRepoRole roleType
-	) {
-		var owner = authUserRepository.findByUsername(ownerUsername).orElseThrow();
-		var collaborator = authUserRepository.findByUsername(collaboratorUsername).orElseThrow();
-		var gitRepo = gitRepoRepository.findByNameAndOwnerId(repositoryName, owner.getUserId()).orElseThrow();
-
-		GitRepoRoleEntity role = new GitRepoRoleEntity();
-		role.setRepo(gitRepo);
-		role.setSubjectType(GitRepoPermissionSubjectType.USER);
-		role.setSubjectId(collaborator.getUserId());
-		role.setRole(roleType);
-
-		gitRepoRoleRepository.save(role);
 	}
 }
