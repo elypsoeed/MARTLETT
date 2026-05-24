@@ -17,6 +17,7 @@ public class DatabaseMigrationConfiguration {
 		boolean cleanOnStart = environment.getProperty("app.flyway.rerun-migrations", Boolean.class, false);
 		Flyway flyway = Flyway.configure()
 			.dataSource(dataSource)
+			.cleanDisabled(!cleanOnStart)
 			.locations(Arrays.stream(locations.split(","))
 				.map(String::trim)
 				.filter(location -> !location.isEmpty())
