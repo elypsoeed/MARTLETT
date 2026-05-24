@@ -7,11 +7,12 @@ import com.elypsoeed.martlett.common.testdata.TestDataProperties;
 import com.elypsoeed.martlett.common.testdata.model.TestUser;
 import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
 import com.elypsoeed.martlett.git.config.properties.GitStorageProperties;
-import com.elypsoeed.martlett.git.entity.HostedRepositoryEntity;
-import com.elypsoeed.martlett.git.repository.HostedRepositoryRepository;
+import com.elypsoeed.martlett.git.entity.GitRepositoryEntity;
+import com.elypsoeed.martlett.git.repository.GitRepositoryRepository;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -30,8 +31,14 @@ public class CreateRepositoryTest {
 	private final TestData testData;
 	private final TestDataProperties testDataProperties;
 	private final GitStorageProperties gitStorageProperties;
-	private final HostedRepositoryRepository hostedRepositoryRepository;
+	private final GitRepositoryRepository gitRepositoryRepository;
 	private final AuthUserRepository authUserRepository;
+	private TestInfo testInfo;
+
+	@BeforeEach
+	void setUp(TestInfo testInfo) {
+		this.testInfo = testInfo;
+	}
 
 	@Test
 	void noAuth() {
@@ -41,7 +48,7 @@ public class CreateRepositoryTest {
 	}
 
 	@Test
-	void success(TestInfo testInfo) throws IOException {
+	void success() throws IOException {
 		TestUser testUser = testData.createAuthedUser(testInfo);
 		Response response = post(testUser.accessToken(), new CreateRepositoryRequest().name("sample-repository"));
 
@@ -56,14 +63,14 @@ public class CreateRepositoryTest {
 			.orElseThrow()
 			.getUserId();
 
-		HostedRepositoryEntity hostedRepository = hostedRepositoryRepository
+		GitRepositoryEntity gitRepository = gitRepositoryRepository
 			.findByNameAndOwnerId(response.jsonPath().getString("name"), ownerId)
 			.orElseThrow();
 
 		Path repositoryPath = Path.of(gitStorageProperties.getRootPath())
 			.toAbsolutePath()
 			.normalize()
-			.resolve(hostedRepository.getStorageRelativePath());
+			.resolve(gitRepository.getStorageRelativePath());
 
 		assertThat(Files.exists(repositoryPath.resolve("HEAD"))).isTrue();
 		try (var repository = new FileRepositoryBuilder().setGitDir(repositoryPath.toFile()).build()) {
@@ -72,7 +79,7 @@ public class CreateRepositoryTest {
 	}
 
 	@Test
-	void rejectsDuplicateRepositoryName(TestInfo testInfo) {
+	void rejectsDuplicateRepositoryName() {
 		TestUser testUser = testData.createAuthedUser(testInfo);
 		CreateRepositoryRequest createRepositoryRequest = new CreateRepositoryRequest().name("duplicate-repository");
 

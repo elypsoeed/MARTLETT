@@ -22,4 +22,15 @@ public class TestDataProperties {
 	public int testPort() {
 		return Integer.parseInt(environment.getRequiredProperty("local.server.port"));
 	}
+
+	public String gitRepositoryUrl(String ownerUsername, String repositoryName) {
+		return apiBaseUrl
+			+ ":"
+			+ testPort()
+			+ "/git/"
+			+ ownerUsername
+			+ "/"
+			+ repositoryName
+			+ ".git";
+	}
 }

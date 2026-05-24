@@ -1,7 +1,8 @@
-package com.elypsoeed.martlett.git.storage;
+package com.elypsoeed.martlett.git.filesystem;
 
 import com.elypsoeed.martlett.git.config.properties.GitStorageProperties;
 import com.elypsoeed.martlett.git.exception.RepositoryConflictException;
+import com.elypsoeed.martlett.git.storage.RepositoryStorage;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.Git;
 import org.springframework.stereotype.Component;
@@ -10,15 +11,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class MemoryRepositoryStorage implements RepositoryStorage {
+public class LocalRepositoryStorage implements RepositoryStorage, RepositoryPathProvider {
 
 	private final GitStorageProperties gitStorageProperties;
 
 	@Override
-	public String createBareRepository(long ownerId, String repositoryName) {
+	public String createRepositoryStorage(long ownerId, String repositoryName) {
 		String storageRelativePath = ownerId + "/" + repositoryName + ".git";
 		Path repositoryPath = repositoryPath(storageRelativePath);
 
@@ -39,7 +41,7 @@ public class MemoryRepositoryStorage implements RepositoryStorage {
 	}
 
 	@Override
-	public void delete(String storageRelativePath) {
+	public void deleteRepositoryStorage(String storageRelativePath) {
 		Path repositoryPath = repositoryPath(storageRelativePath);
 		if (!Files.exists(repositoryPath)) {
 			return;
@@ -57,6 +59,14 @@ public class MemoryRepositoryStorage implements RepositoryStorage {
 		} catch (IOException exception) {
 			throw new IllegalStateException("Failed to clean repository storage", exception);
 		}
+	}
+
+	@Override
+	public Optional<Path> findPath(String storageRelativePath) {
+		Path repositoryPath = repositoryPath(storageRelativePath);
+		return Files.exists(repositoryPath)
+			? Optional.of(repositoryPath)
+			: Optional.empty();
 	}
 
 	private Path repositoryPath(String storageRelativePath) {

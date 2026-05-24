@@ -3,6 +3,7 @@ package com.elypsoeed.martlett.auth.config;
 import com.elypsoeed.martlett.auth.config.properties.JwtProperties;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.Order;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,8 +33,23 @@ public class SecurityConfiguration {
 	private final JwtDecoderFactory jwtDecoderFactory;
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	@Order(1)
+	SecurityFilterChain gitSecurityFilterChain(HttpSecurity http) {
+        return http
+                .securityMatcher("/git/**", "/**/info/refs", "/**/git-upload-pack", "/**/git-receive-pack")
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                .httpBasic(basic -> {
+                })
+                .build();
+    }
+
+	@Bean
+	@Order(2)
+	SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) {
 		return http
+			.securityMatcher("/api/**", "/actuator/health", "/error")
 			.csrf(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorize -> authorize
@@ -48,12 +64,21 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
+	@Order(3)
+	SecurityFilterChain firewallSecurityFilterChain(HttpSecurity http) {
+		return http
+			.csrf(AbstractHttpConfigurer::disable)
+			.authorizeHttpRequests(authorize -> authorize.anyRequest().denyAll())
+			.build();
+	}
+
+	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
-	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 

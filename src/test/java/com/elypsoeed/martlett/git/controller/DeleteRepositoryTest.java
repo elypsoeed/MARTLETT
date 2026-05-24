@@ -3,19 +3,18 @@ package com.elypsoeed.martlett.git.controller;
 import com.elypsoeed.martlett.IntegrationTest;
 import com.elypsoeed.martlett.auth.repository.AuthUserRepository;
 import com.elypsoeed.martlett.common.testdata.TestData;
-import com.elypsoeed.martlett.common.testdata.model.TestUser;
 import com.elypsoeed.martlett.common.testdata.TestDataProperties;
-import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
+import com.elypsoeed.martlett.common.testdata.model.TestUser;
 import com.elypsoeed.martlett.git.config.properties.GitStorageProperties;
-import com.elypsoeed.martlett.git.entity.HostedRepositoryEntity;
-import com.elypsoeed.martlett.git.repository.HostedRepositoryRepository;
+import com.elypsoeed.martlett.git.entity.GitRepositoryEntity;
+import com.elypsoeed.martlett.git.repository.GitRepositoryRepository;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -29,8 +28,14 @@ public class DeleteRepositoryTest {
 	private final TestData testData;
 	private final TestDataProperties testDataProperties;
 	private final GitStorageProperties gitStorageProperties;
-	private final HostedRepositoryRepository hostedRepositoryRepository;
+	private final GitRepositoryRepository gitRepositoryRepository;
 	private final AuthUserRepository authUserRepository;
+	private TestInfo testInfo;
+
+	@BeforeEach
+	void setUp(TestInfo testInfo) {
+		this.testInfo = testInfo;
+	}
 
 	@Test
 	void noAuth() {
@@ -40,9 +45,9 @@ public class DeleteRepositoryTest {
 	}
 
 	@Test
-	void success(TestInfo testInfo) throws IOException {
+	void success() {
 		TestUser testUser = testData.createAuthedUser(testInfo);
-		Response createResponse = post(testUser.accessToken(), new CreateRepositoryRequest().name("repository-to-delete"));
+		Response createResponse = testData.createRepository(testUser, "repository-to-delete");
 
 		assertThat(createResponse.statusCode()).isEqualTo(201);
 
@@ -50,14 +55,14 @@ public class DeleteRepositoryTest {
 			.orElseThrow()
 			.getUserId();
 
-		HostedRepositoryEntity hostedRepository = hostedRepositoryRepository
+		GitRepositoryEntity gitRepository = gitRepositoryRepository
 			.findByNameAndOwnerId(createResponse.jsonPath().getString("name"), ownerId)
 			.orElseThrow();
 
 		Path repositoryPath = Path.of(gitStorageProperties.getRootPath())
 			.toAbsolutePath()
 			.normalize()
-			.resolve(hostedRepository.getStorageRelativePath());
+			.resolve(gitRepository.getStorageRelativePath());
 
 		Response deleteResponse = delete(
 			testUser.accessToken(),
@@ -65,12 +70,12 @@ public class DeleteRepositoryTest {
 		);
 
 		assertThat(deleteResponse.statusCode()).isEqualTo(204);
-		assertThat(hostedRepositoryRepository.findByNameAndOwnerId(createResponse.jsonPath().getString("name"), ownerId)).isEmpty();
+		assertThat(gitRepositoryRepository.findByNameAndOwnerId(createResponse.jsonPath().getString("name"), ownerId)).isEmpty();
 		assertThat(Files.exists(repositoryPath)).isFalse();
 	}
 
 	@Test
-	void missingRepository(TestInfo testInfo) {
+	void missingRepository() {
 		TestUser testUser = testData.createAuthedUser(testInfo);
 		Response response = delete(testUser.accessToken(), "missing-repository");
 
@@ -85,8 +90,8 @@ public class DeleteRepositoryTest {
 			.accept("application/json");
 	}
 
-	private Response post(String accessToken, Object body) {
-		RequestSpecification request = request().body(body);
+	private Response delete(String accessToken, String repositoryName) {
+		RequestSpecification request = request();
 
 		if (accessToken != null) {
 			request.auth().oauth2(accessToken);
@@ -94,30 +99,9 @@ public class DeleteRepositoryTest {
 
 		return request
 			.when()
-			.post("/api/repositories")
+			.delete("/api/repositories/" + repositoryName)
 			.then()
 			.extract()
 			.response();
 	}
-
-    private Response delete(String accessToken, String repositoryName) {
-        RequestSpecification request = given()
-                .baseUri(testDataProperties.getApiBaseUrl())
-                .port(testDataProperties.testPort())
-                .contentType("application/json")
-                .accept("application/json")
-                .log().all();  // ← Добавить логирование
-
-        if (accessToken != null) {
-            request = request.auth().oauth2(accessToken);
-        }
-
-        return request
-                .when()
-                .delete("/api/repositories/" + repositoryName)
-                .then()
-                .log().all()  // ← И тут
-                .extract()
-                .response();
-    }
 }

@@ -18,8 +18,8 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
-@Table(name = "hosted_repositories")
-public class HostedRepositoryEntity {
+@Table(name = "git_repositories")
+public class GitRepositoryEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

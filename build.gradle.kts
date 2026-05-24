@@ -39,7 +39,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-	implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r")
+	implementation("org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r")
+	implementation("org.eclipse.jgit:org.eclipse.jgit.http.server:7.6.0.202603022253-r")
 	implementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.31")
 	implementation("io.swagger.core.v3:swagger-models-jakarta:2.2.31")
     implementation("org.springframework.boot:spring-boot-starter-actuator:4.1.0-M4")
@@ -145,5 +146,3 @@ openApiGenerate {
 tasks.named("compileJava") {
 	dependsOn(tasks.named("openApiGenerate"))
 }
-
-
