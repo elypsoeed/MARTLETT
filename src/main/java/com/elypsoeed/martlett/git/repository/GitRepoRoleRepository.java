@@ -1,8 +1,8 @@
 package com.elypsoeed.martlett.git.repository;
 
 import com.elypsoeed.martlett.git.entity.GitRepoRoleEntity;
-import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
-import com.elypsoeed.martlett.git.model.GitRepoRole;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermissionSubjectType;
+import com.elypsoeed.martlett.git.model.enums.GitRepoRole;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 

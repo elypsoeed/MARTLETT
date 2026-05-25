@@ -1,0 +1,30 @@
+type: object
+required:
+  - name
+  - path
+  - ref
+  - commit
+  - binary
+  - size
+properties:
+  name:
+    type: string
+    nullable: false
+  path:
+    type: string
+    nullable: false
+  ref:
+    type: string
+    nullable: false
+  commit:
+    $ref: "./RepositoryCommitResponse.yaml"
+  binary:
+    type: boolean
+    nullable: false
+  content:
+    type: string
+    nullable: true
+  size:
+    type: integer
+    format: int64
+    nullable: false

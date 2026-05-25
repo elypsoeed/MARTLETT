@@ -1,0 +1,21 @@
+type: object
+required:
+  - name
+  - path
+  - type
+properties:
+  name:
+    type: string
+    nullable: false
+  path:
+    type: string
+    nullable: false
+  type:
+    type: string
+    enum:
+      - FILE
+      - DIRECTORY
+  size:
+    type: integer
+    format: int64
+    nullable: true

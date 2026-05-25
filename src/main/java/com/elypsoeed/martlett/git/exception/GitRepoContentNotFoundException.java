@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class GitRepoNotFoundException extends RuntimeException {
+public class GitRepoContentNotFoundException extends RuntimeException {
 
-	public GitRepoNotFoundException(String repositoryName) {
-		super("Repository %s not found".formatted(repositoryName));
+	public GitRepoContentNotFoundException() {
+		super("Repository content not found");
 	}
 }

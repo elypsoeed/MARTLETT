@@ -13,7 +13,7 @@ currentUserPath:
             schema:
               $ref: "../schemas/responses/UserProfileResponse.yaml"
       "401":
-        description: Authentication required
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
   patch:
     tags:
       - Users
@@ -34,9 +34,9 @@ currentUserPath:
             schema:
               $ref: "../schemas/responses/UserProfileResponse.yaml"
       "400":
-        description: Invalid request
+        $ref: "../openapi-config.yaml#/components/responses/InvalidRequest"
       "401":
-        description: Authentication required
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
 
 userByUsernamePath:
   parameters:
@@ -58,4 +58,28 @@ userByUsernamePath:
             schema:
               $ref: "../schemas/responses/UserProfileResponse.yaml"
       "404":
-        description: User not found
+        $ref: "../openapi-config.yaml#/components/responses/UserNotFound"
+
+userRepositoriesPath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    tags:
+      - Repositories
+    operationId: getUserRepositories
+    security: []
+    responses:
+      "200":
+        description: Public repositories of user
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/responses/RepositoryResponse.yaml"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/UserNotFound"

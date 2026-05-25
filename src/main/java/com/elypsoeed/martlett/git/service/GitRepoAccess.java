@@ -1,10 +1,10 @@
 package com.elypsoeed.martlett.git.service;
 
 import com.elypsoeed.martlett.git.model.GitRepoMetadata;
-import com.elypsoeed.martlett.git.model.GitRepoPermission;
-import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
-import com.elypsoeed.martlett.git.model.GitRepoRole;
-import com.elypsoeed.martlett.git.model.GitRepoVisibility;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermission;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermissionSubjectType;
+import com.elypsoeed.martlett.git.model.enums.GitRepoRole;
+import com.elypsoeed.martlett.git.model.enums.GitRepoVisibility;
 import com.elypsoeed.martlett.git.repository.GitRepoPermissionRepository;
 import lombok.RequiredArgsConstructor;
 

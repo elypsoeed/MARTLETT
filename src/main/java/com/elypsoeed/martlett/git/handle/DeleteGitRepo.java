@@ -24,7 +24,7 @@ public class DeleteGitRepo {
 
 		GitRepoEntity gitRepo = gitRepoRepository
 			.findByNameAndOwnerId(repositoryName, authUser.getUserId())
-			.orElseThrow(() -> new GitRepoNotFoundException("Repository not found"));
+			.orElseThrow(() -> new GitRepoNotFoundException(repositoryName));
 
 		gitRepoRepository.delete(gitRepo);
 		gitRepoStorageTransactionCoordinator.deleteRepoStorageAfterCommit(gitRepo.getStorageRelativePath());

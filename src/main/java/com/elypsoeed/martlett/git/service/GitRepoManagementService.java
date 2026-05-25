@@ -4,7 +4,7 @@ import com.elypsoeed.martlett.git.entity.GitRepoEntity;
 import com.elypsoeed.martlett.git.exception.InvalidGitRepoNameException;
 import com.elypsoeed.martlett.git.handle.CreateGitRepo;
 import com.elypsoeed.martlett.git.handle.DeleteGitRepo;
-import com.elypsoeed.martlett.git.model.GitRepoVisibility;
+import com.elypsoeed.martlett.git.model.enums.GitRepoVisibility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

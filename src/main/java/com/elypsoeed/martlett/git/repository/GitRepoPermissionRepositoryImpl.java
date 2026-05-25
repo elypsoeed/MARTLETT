@@ -1,8 +1,8 @@
 package com.elypsoeed.martlett.git.repository;
 
 import com.elypsoeed.martlett.git.entity.QGitRepoPermissionEntity;
-import com.elypsoeed.martlett.git.model.GitRepoPermission;
-import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermission;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermissionSubjectType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 

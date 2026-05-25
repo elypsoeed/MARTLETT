@@ -15,12 +15,43 @@ paths:
     $ref: "./paths/users.yaml#/currentUserPath"
   /api/users/{username}:
     $ref: "./paths/users.yaml#/userByUsernamePath"
+  /api/users/{username}/repositories:
+    $ref: "./paths/users.yaml#/userRepositoriesPath"
   /api/repositories:
     $ref: "./paths/repositories.yaml#/repositoriesPath"
   /api/repositories/{repositoryName}:
     $ref: "./paths/repositories.yaml#/repositoryByNamePath"
+  /api/repositories/{username}/{repositoryName}:
+    $ref: "./paths/repositories.yaml#/userRepositoryByNamePath"
+  /api/repositories/{username}/{repositoryName}/branches:
+    $ref: "./paths/repositories.yaml#/userRepositoryBranchesPath"
+  /api/repositories/{username}/{repositoryName}/tree:
+    $ref: "./paths/repositories.yaml#/userRepositoryTreePath"
+  /api/repositories/{username}/{repositoryName}/blob:
+    $ref: "./paths/repositories.yaml#/userRepositoryBlobPath"
+  /api/repositories/{username}/{repositoryName}/blob/raw:
+    $ref: "./paths/repositories.yaml#/userRepositoryRawBlobPath"
+  /api/repositories/{username}/{repositoryName}/readme:
+    $ref: "./paths/repositories.yaml#/userRepositoryReadmePath"
+  /api/repositories/{username}/{repositoryName}/commits:
+    $ref: "./paths/repositories.yaml#/userRepositoryCommitsPath"
 
 components:
+  responses:
+    AuthenticationRequired:
+      description: Authentication required
+    AccessDenied:
+      description: Access denied
+    InvalidRequest:
+      description: Invalid request
+    UserNotFound:
+      description: User not found
+    RepositoryNotFound:
+      description: Repository not found
+    RepositoryContentNotFound:
+      description: Repository content not found
+    RepositoryAlreadyExists:
+      description: Repository already exists
   securitySchemes:
     bearerAuth:
       type: http

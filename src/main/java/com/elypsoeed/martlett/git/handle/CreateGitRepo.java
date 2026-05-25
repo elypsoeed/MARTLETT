@@ -4,7 +4,7 @@ import com.elypsoeed.martlett.auth.entity.AuthUserEntity;
 import com.elypsoeed.martlett.auth.repository.AuthUserRepository;
 import com.elypsoeed.martlett.git.entity.GitRepoEntity;
 import com.elypsoeed.martlett.git.exception.GitRepoConflictException;
-import com.elypsoeed.martlett.git.model.GitRepoVisibility;
+import com.elypsoeed.martlett.git.model.enums.GitRepoVisibility;
 import com.elypsoeed.martlett.git.repository.GitRepoRepository;
 import com.elypsoeed.martlett.git.storage.GitRepoStorageTransactionCoordinator;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.elypsoeed.martlett.git.entity;
 
 import com.elypsoeed.martlett.common.entity.UserEntity;
-import com.elypsoeed.martlett.git.model.GitRepoVisibility;
+import com.elypsoeed.martlett.git.model.enums.GitRepoVisibility;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
