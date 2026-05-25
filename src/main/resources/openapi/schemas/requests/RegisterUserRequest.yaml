@@ -1,8 +1,7 @@
 type: object
 required:
-  - name
-  - surname
-  - nickname
+  - firstName
+  - lastName
   - username
   - password
 properties:
