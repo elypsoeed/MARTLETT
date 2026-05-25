@@ -1,0 +1,61 @@
+currentUserPath:
+  get:
+    tags:
+      - Users
+    operationId: getCurrentUser
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Current user profile
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/responses/UserProfileResponse.yaml"
+      "401":
+        description: Authentication required
+  patch:
+    tags:
+      - Users
+    operationId: updateCurrentUser
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/requests/UpdateUserProfileRequest.yaml"
+    responses:
+      "200":
+        description: Current user profile updated
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/responses/UserProfileResponse.yaml"
+      "400":
+        description: Invalid request
+      "401":
+        description: Authentication required
+
+userByUsernamePath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    tags:
+      - Users
+    operationId: getUserByUsername
+    security: []
+    responses:
+      "200":
+        description: Public user profile
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/responses/UserProfileResponse.yaml"
+      "404":
+        description: User not found

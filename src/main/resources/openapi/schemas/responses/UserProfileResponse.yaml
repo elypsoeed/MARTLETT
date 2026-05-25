@@ -1,0 +1,48 @@
+type: object
+required:
+  - id
+  - username
+  - firstName
+  - lastName
+  - registrationTimestamp
+properties:
+  id:
+    type: integer
+    format: int64
+    nullable: false
+  username:
+    type: string
+    nullable: false
+  firstName:
+    type: string
+    nullable: false
+  lastName:
+    type: string
+    nullable: false
+  sex:
+    type: string
+    nullable: true
+    enum:
+      - MALE
+      - FEMALE
+      - OTHER
+  age:
+    type: integer
+    format: int32
+    nullable: true
+  city:
+    type: string
+    nullable: true
+  tgContact:
+    type: string
+    nullable: true
+  emailContact:
+    type: string
+    nullable: true
+  placeOfWork:
+    type: string
+    nullable: true
+  registrationTimestamp:
+    type: string
+    format: date-time
+    nullable: false
