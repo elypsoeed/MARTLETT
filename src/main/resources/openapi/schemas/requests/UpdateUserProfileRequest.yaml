@@ -1,0 +1,37 @@
+type: object
+required:
+  - firstName
+  - lastName
+properties:
+  firstName:
+    type: string
+    nullable: false
+    minLength: 1
+  lastName:
+    type: string
+    nullable: false
+    minLength: 1
+  sex:
+    type: string
+    nullable: true
+    enum:
+      - MALE
+      - FEMALE
+      - OTHER
+  age:
+    type: integer
+    format: int32
+    nullable: true
+    minimum: 0
+  city:
+    type: string
+    nullable: true
+  tgContact:
+    type: string
+    nullable: true
+  emailContact:
+    type: string
+    nullable: true
+  placeOfWork:
+    type: string
+    nullable: true

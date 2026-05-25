@@ -11,6 +11,10 @@ paths:
     $ref: "./paths/auth-token.yaml"
   /api/auth/refresh:
     $ref: "./paths/auth-refresh.yaml"
+  /api/me:
+    $ref: "./paths/users.yaml#/currentUserPath"
+  /api/users/{username}:
+    $ref: "./paths/users.yaml#/userByUsernamePath"
   /api/repositories:
     $ref: "./paths/repositories.yaml#/repositoriesPath"
   /api/repositories/{repositoryName}:

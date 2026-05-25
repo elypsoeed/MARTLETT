@@ -1,6 +1,0 @@
-spring:
-  config:
-    import: ""
-  cloud:
-    vault:
-      enabled: false
