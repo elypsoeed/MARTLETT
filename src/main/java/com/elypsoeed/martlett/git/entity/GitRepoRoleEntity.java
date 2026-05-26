@@ -1,7 +1,7 @@
 package com.elypsoeed.martlett.git.entity;
 
-import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
-import com.elypsoeed.martlett.git.model.GitRepoRole;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermissionSubjectType;
+import com.elypsoeed.martlett.git.model.enums.GitRepoRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,0 +1,18 @@
+type: object
+required:
+  - ref
+  - commit
+  - entries
+properties:
+  ref:
+    type: string
+    nullable: false
+  path:
+    type: string
+    nullable: true
+  commit:
+    $ref: "./RepositoryCommitResponse.yaml"
+  entries:
+    type: array
+    items:
+      $ref: "./RepositoryTreeEntryResponse.yaml"

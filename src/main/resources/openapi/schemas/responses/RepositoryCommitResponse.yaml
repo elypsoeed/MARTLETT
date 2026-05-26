@@ -1,0 +1,24 @@
+type: object
+required:
+  - sha
+  - message
+  - authorName
+  - authorEmail
+  - committedTimestamp
+properties:
+  sha:
+    type: string
+    nullable: false
+  message:
+    type: string
+    nullable: false
+  authorName:
+    type: string
+    nullable: false
+  authorEmail:
+    type: string
+    nullable: false
+  committedTimestamp:
+    type: string
+    format: date-time
+    nullable: false

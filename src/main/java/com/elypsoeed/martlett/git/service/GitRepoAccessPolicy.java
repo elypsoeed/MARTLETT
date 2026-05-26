@@ -3,7 +3,7 @@ package com.elypsoeed.martlett.git.service;
 import com.elypsoeed.martlett.auth.repository.AuthUserRepository;
 import com.elypsoeed.martlett.git.entity.GitRepoRoleEntity;
 import com.elypsoeed.martlett.git.model.GitRepoMetadata;
-import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermissionSubjectType;
 import com.elypsoeed.martlett.git.repository.GitRepoPermissionRepository;
 import com.elypsoeed.martlett.git.repository.GitRepoRoleRepository;
 import lombok.RequiredArgsConstructor;

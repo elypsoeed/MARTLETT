@@ -1,0 +1,11 @@
+type: object
+required:
+  - name
+  - defaultBranch
+properties:
+  name:
+    type: string
+    nullable: false
+  defaultBranch:
+    type: boolean
+    nullable: false

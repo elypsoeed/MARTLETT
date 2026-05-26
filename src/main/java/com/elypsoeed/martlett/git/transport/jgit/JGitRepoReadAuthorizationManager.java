@@ -1,7 +1,7 @@
 package com.elypsoeed.martlett.git.transport.jgit;
 
 import com.elypsoeed.martlett.git.service.GitRepoAccessPolicy;
-import com.elypsoeed.martlett.git.service.GitRepoLookupService;
+import com.elypsoeed.martlett.git.service.GitRepoReadService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -22,7 +22,7 @@ public class JGitRepoReadAuthorizationManager implements AuthorizationManager<Re
 
 	private static final Pattern REQUEST_PATH_PATTERN = Pattern.compile("^/git/([^/]+)/([^/]+)\\.git(?:/.*)?$");
 
-	private final GitRepoLookupService gitRepoLookupService;
+	private final GitRepoReadService gitRepoReadService;
 	private final GitRepoAccessPolicy gitRepoAccessPolicy;
 
 	@Override
@@ -39,7 +39,7 @@ public class JGitRepoReadAuthorizationManager implements AuthorizationManager<Re
 		String ownerUsername = matcher.group(1);
 		String repositoryName = matcher.group(2);
 
-		return new AuthorizationDecision(gitRepoLookupService.findByNameAndOwner(repositoryName, ownerUsername)
+		return new AuthorizationDecision(gitRepoReadService.findMetadataByNameAndOwnerUsername(repositoryName, ownerUsername)
 			.map(metadata -> gitRepoAccessPolicy.resolve(metadata, authenticatedUsername(authentication.get())).canRead())
 			.orElse(true));
 	}

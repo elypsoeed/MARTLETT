@@ -11,9 +11,9 @@ import com.elypsoeed.martlett.generated.model.TokenRequest;
 import com.elypsoeed.martlett.generated.model.TokenResponse;
 import com.elypsoeed.martlett.git.entity.GitRepoPermissionEntity;
 import com.elypsoeed.martlett.git.entity.GitRepoRoleEntity;
-import com.elypsoeed.martlett.git.model.GitRepoPermission;
-import com.elypsoeed.martlett.git.model.GitRepoPermissionSubjectType;
-import com.elypsoeed.martlett.git.model.GitRepoRole;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermission;
+import com.elypsoeed.martlett.git.model.enums.GitRepoPermissionSubjectType;
+import com.elypsoeed.martlett.git.model.enums.GitRepoRole;
 import com.elypsoeed.martlett.git.repository.GitRepoPermissionRepository;
 import com.elypsoeed.martlett.git.repository.GitRepoRepository;
 import com.elypsoeed.martlett.git.repository.GitRepoRoleRepository;
@@ -27,8 +27,10 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
@@ -104,6 +106,36 @@ public class TestData {
                         testUser.password()
                 ))
                 .call();
+    }
+
+    public void pushFiles(
+            TestUser testUser,
+            String ownerUsername,
+            String repositoryName,
+            Path directory,
+            Map<String, String> files
+    ) throws Exception {
+        try (var git = cloneRepository(testUser, ownerUsername, repositoryName, directory)) {
+            for (Map.Entry<String, String> file : files.entrySet()) {
+                Path filePath = directory.resolve(file.getKey());
+                Files.createDirectories(filePath.getParent());
+                Files.writeString(filePath, file.getValue());
+                git.add().addFilepattern(file.getKey()).call();
+            }
+
+            git.commit()
+                    .setMessage("Seed repository")
+                    .setAuthor("Test User", "test@example.com")
+                    .setCommitter("Test User", "test@example.com")
+                    .call();
+
+            git.push()
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(
+                            testUser.username(),
+                            testUser.password()
+                    ))
+                    .call();
+        }
     }
 
     public void grantPermission(

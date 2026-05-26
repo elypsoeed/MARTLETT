@@ -1,4 +1,21 @@
 repositoriesPath:
+  get:
+    tags:
+      - Repositories
+    operationId: getCurrentUserRepositories
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Current user repositories
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/responses/RepositoryResponse.yaml"
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
   post:
     tags:
       - Repositories
@@ -19,11 +36,11 @@ repositoriesPath:
             schema:
               $ref: "../schemas/responses/RepositoryResponse.yaml"
       "401":
-        description: Authentication required
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
       "409":
-        description: Repository already exists
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryAlreadyExists"
       "400":
-        description: Invalid request
+        $ref: "../openapi-config.yaml#/components/responses/InvalidRequest"
 
 repositoryByNamePath:
   parameters:
@@ -42,6 +59,286 @@ repositoryByNamePath:
       "204":
         description: Repository deleted
       "401":
-        description: Authentication required
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
       "404":
-        description: Repository not found
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryNotFound"
+
+userRepositoryByNamePath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: repositoryName
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    tags:
+      - Repositories
+    operationId: getRepository
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Repository details
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/responses/RepositoryResponse.yaml"
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
+      "403":
+        $ref: "../openapi-config.yaml#/components/responses/AccessDenied"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryNotFound"
+
+userRepositoryBranchesPath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: repositoryName
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    tags:
+      - Repositories
+    operationId: getRepositoryBranches
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Repository branches
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/responses/RepositoryBranchResponse.yaml"
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
+      "403":
+        $ref: "../openapi-config.yaml#/components/responses/AccessDenied"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryNotFound"
+
+userRepositoryTreePath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: repositoryName
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: ref
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: path
+      in: query
+      required: false
+      schema:
+        type: string
+  get:
+    tags:
+      - Repositories
+    operationId: getRepositoryTree
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Repository tree entries
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/responses/RepositoryTreeResponse.yaml"
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
+      "403":
+        $ref: "../openapi-config.yaml#/components/responses/AccessDenied"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryContentNotFound"
+
+userRepositoryBlobPath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: repositoryName
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: ref
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: path
+      in: query
+      required: true
+      schema:
+        type: string
+  get:
+    tags:
+      - Repositories
+    operationId: getRepositoryBlob
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Repository blob contents
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/responses/RepositoryBlobResponse.yaml"
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
+      "403":
+        $ref: "../openapi-config.yaml#/components/responses/AccessDenied"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryContentNotFound"
+
+userRepositoryRawBlobPath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: repositoryName
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: ref
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: path
+      in: query
+      required: true
+      schema:
+        type: string
+  get:
+    tags:
+      - Repositories
+    operationId: getRepositoryBlobRaw
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Raw repository blob contents
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
+      "403":
+        $ref: "../openapi-config.yaml#/components/responses/AccessDenied"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryContentNotFound"
+
+userRepositoryReadmePath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: repositoryName
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: ref
+      in: query
+      required: true
+      schema:
+        type: string
+  get:
+    tags:
+      - Repositories
+    operationId: getRepositoryReadme
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Repository README contents
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/responses/RepositoryBlobResponse.yaml"
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
+      "403":
+        $ref: "../openapi-config.yaml#/components/responses/AccessDenied"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryContentNotFound"
+
+userRepositoryCommitsPath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: repositoryName
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: ref
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: path
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+  get:
+    tags:
+      - Repositories
+    operationId: getRepositoryCommits
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Repository commits
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/responses/RepositoryCommitResponse.yaml"
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
+      "403":
+        $ref: "../openapi-config.yaml#/components/responses/AccessDenied"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/RepositoryContentNotFound"
