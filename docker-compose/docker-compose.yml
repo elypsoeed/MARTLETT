@@ -26,6 +26,9 @@ services:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      APP_GIT_STORAGE_ROOT_PATH: ${APP_GIT_STORAGE_ROOT_PATH}
+    volumes:
+      - git-storage:/var/lib/martlett/git
     ports:
       - "8080:8080"
     healthcheck:
@@ -62,4 +65,5 @@ services:
 
 volumes:
   postgres-data:
+  git-storage:
   vault-data:
