@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor
 public class CorsConfigurationTest {
 
-	private static final String ALLOWED_ORIGIN = "http://localhost:3000";
+	private static final String ALLOWED_ORIGIN = "http://localhost:5173";
 	private static final String DISALLOWED_ORIGIN = "http://lavrent.dog";
 
 	private final TestDataProperties testDataProperties;
