@@ -1,5 +1,6 @@
 package com.elypsoeed.martlett.git.transport.jgit;
 
+import com.elypsoeed.martlett.git.service.GitRepoAccess;
 import com.elypsoeed.martlett.git.service.GitRepoAccessPolicy;
 import com.elypsoeed.martlett.git.service.GitRepoReadService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +41,17 @@ public class JGitRepoReadAuthorizationManager implements AuthorizationManager<Re
 		String repositoryName = matcher.group(2);
 
 		return new AuthorizationDecision(gitRepoReadService.findMetadataByNameAndOwnerUsername(repositoryName, ownerUsername)
-			.map(metadata -> gitRepoAccessPolicy.resolve(metadata, authenticatedUsername(authentication.get())).canRead())
+			.map(metadata -> canAccess(request, gitRepoAccessPolicy.resolve(metadata, authenticatedUsername(authentication.get()))))
 			.orElse(true));
+	}
+
+	private boolean canAccess(HttpServletRequest request, GitRepoAccess access) {
+		return isReceivePackRequest(request) ? access.canWrite() : access.canRead();
+	}
+
+	private boolean isReceivePackRequest(HttpServletRequest request) {
+		return request.getRequestURI().endsWith("/git-receive-pack")
+			|| "git-receive-pack".equals(request.getParameter("service"));
 	}
 
 	private String authenticatedUsername(Authentication authentication) {
