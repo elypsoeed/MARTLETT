@@ -38,6 +38,37 @@ currentUserPath:
       "401":
         $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
 
+currentUserAvatarPath:
+  put:
+    tags:
+      - Users
+    operationId: updateCurrentUserAvatar
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - file
+            properties:
+              file:
+                type: string
+                format: binary
+    responses:
+      "200":
+        description: Current user avatar updated
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/responses/UserProfileResponse.yaml"
+      "400":
+        $ref: "../openapi-config.yaml#/components/responses/InvalidRequest"
+      "401":
+        $ref: "../openapi-config.yaml#/components/responses/AuthenticationRequired"
+
 userByUsernamePath:
   parameters:
     - name: username
@@ -57,6 +88,29 @@ userByUsernamePath:
           application/json:
             schema:
               $ref: "../schemas/responses/UserProfileResponse.yaml"
+      "404":
+        $ref: "../openapi-config.yaml#/components/responses/UserNotFound"
+
+userAvatarPath:
+  parameters:
+    - name: username
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    tags:
+      - Users
+    operationId: getUserAvatar
+    security: []
+    responses:
+      "200":
+        description: Public user avatar
+        content:
+          image/*:
+            schema:
+              type: string
+              format: binary
       "404":
         $ref: "../openapi-config.yaml#/components/responses/UserNotFound"
 

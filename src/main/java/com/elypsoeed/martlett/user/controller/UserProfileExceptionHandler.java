@@ -1,5 +1,6 @@
 package com.elypsoeed.martlett.user.controller;
 
+import com.elypsoeed.martlett.user.exception.InvalidUserAvatarException;
 import com.elypsoeed.martlett.user.exception.UserProfileNotFoundException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
@@ -13,5 +14,10 @@ public class UserProfileExceptionHandler {
 	@ExceptionHandler(UserProfileNotFoundException.class)
 	ResponseEntity<@NonNull Void> handleUserProfileNotFound() {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	}
+
+	@ExceptionHandler(InvalidUserAvatarException.class)
+	ResponseEntity<@NonNull Void> handleInvalidUserAvatar() {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 }

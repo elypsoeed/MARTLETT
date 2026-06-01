@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().access(jGitRepoReadAuthorizationManager))
-                .httpBasic(basic -> {
+                .httpBasic(_ -> {
                 })
                 .build();
     }
@@ -65,6 +65,7 @@ public class SecurityConfiguration {
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/api/auth/register", "/api/auth/token", "/api/auth/refresh", "/actuator/health").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/users/*").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/users/*/avatar").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/users/*/repositories").permitAll()
 				.anyRequest().authenticated()
 			)
@@ -103,7 +104,7 @@ public class SecurityConfiguration {
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
-		configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
 		configuration.setAllowCredentials(false);
 

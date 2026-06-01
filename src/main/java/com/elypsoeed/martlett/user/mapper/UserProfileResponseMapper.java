@@ -3,8 +3,10 @@ package com.elypsoeed.martlett.user.mapper;
 import com.elypsoeed.martlett.common.entity.UserEntity;
 import com.elypsoeed.martlett.generated.model.UserProfileResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriUtils;
 
 import java.time.ZoneOffset;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class UserProfileResponseMapper {
@@ -20,6 +22,7 @@ public class UserProfileResponseMapper {
 			.tgContact(user.getTgContact())
 			.emailContact(user.getEmailContact())
 			.placeOfWork(user.getPlaceOfWork())
+			.avatarUrl(avatarUrl(user))
 			.registrationTimestamp(user.getRegistrationTimestamp().atOffset(ZoneOffset.UTC));
 
 		if (user.getSex() != null) {
@@ -27,5 +30,13 @@ public class UserProfileResponseMapper {
 		}
 
 		return response;
+	}
+
+	private String avatarUrl(UserEntity user) {
+		if (user.getAvatarData() == null || user.getAvatarContentType() == null) {
+			return null;
+		}
+
+		return "/api/users/" + UriUtils.encodePathSegment(user.getUsername(), StandardCharsets.UTF_8) + "/avatar";
 	}
 }
