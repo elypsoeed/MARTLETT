@@ -7,5 +7,5 @@ services:
   app:
     image: ghcr.io/elypsoeed/martlett:staging
     environment:
-      APP_FLYWAY_RERUN_MIGRATIONS: "true"
+      APP_FLYWAY_RERUN_MIGRATIONS: "false"
       APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-https://martlett.publicstatic.space}
