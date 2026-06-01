@@ -5,6 +5,8 @@ import com.elypsoeed.martlett.auth.repository.AuthUserRepository;
 import com.elypsoeed.martlett.common.testdata.TestData;
 import com.elypsoeed.martlett.common.testdata.TestDataProperties;
 import com.elypsoeed.martlett.common.testdata.model.TestUser;
+import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
+import com.elypsoeed.martlett.generated.model.RepositoryVisibility;
 import com.elypsoeed.martlett.git.config.properties.GitStorageProperties;
 import com.elypsoeed.martlett.git.model.enums.GitRepoPermission;
 import com.elypsoeed.martlett.git.model.enums.GitRepoRole;
@@ -62,6 +64,28 @@ public class PushRepositoryTest {
 
 		assertThat(headExists(owner.username(), repositoryName)).isTrue();
 		assertThat(readFileFromHead(owner.username(), repositoryName, "owner.txt")).isEqualTo("owner");
+	}
+
+	@Test
+	void ownerCanPushToPublicRepository(@TempDir Path tempDir) throws Exception {
+		TestUser owner = testData.createAuthedUser(testInfo);
+		String repositoryName = "push-public-success";
+		testData.createRepositoryFromRequest(
+			owner,
+			new CreateRepositoryRequest()
+				.name(repositoryName)
+				.visibility(RepositoryVisibility.PUBLIC)
+		);
+
+		try (Git git = cloneRepository(owner, owner.username(), repositoryName, tempDir.resolve("repository"))) {
+			createCommit(git, tempDir.resolve("repository"), "public.txt", "public");
+			git.push()
+				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(owner.username(), owner.password()))
+				.call();
+		}
+
+		assertThat(headExists(owner.username(), repositoryName)).isTrue();
+		assertThat(readFileFromHead(owner.username(), repositoryName, "public.txt")).isEqualTo("public");
 	}
 
 	@Test
