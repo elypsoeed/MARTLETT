@@ -51,4 +51,10 @@ public class UserEntity {
 
 	@Column(name = "place_of_work")
 	private String placeOfWork;
+
+	@Column(name = "avatar_content_type")
+	private String avatarContentType;
+
+	@Column(name = "avatar_data")
+	private byte[] avatarData;
 }

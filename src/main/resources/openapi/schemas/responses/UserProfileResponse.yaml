@@ -42,6 +42,9 @@ properties:
   placeOfWork:
     type: string
     nullable: true
+  avatarUrl:
+    type: string
+    nullable: true
   registrationTimestamp:
     type: string
     format: date-time

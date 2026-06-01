@@ -13,8 +13,12 @@ paths:
     $ref: "./paths/auth-refresh.yaml"
   /api/me:
     $ref: "./paths/users.yaml#/currentUserPath"
+  /api/me/avatar:
+    $ref: "./paths/users.yaml#/currentUserAvatarPath"
   /api/users/{username}:
     $ref: "./paths/users.yaml#/userByUsernamePath"
+  /api/users/{username}/avatar:
+    $ref: "./paths/users.yaml#/userAvatarPath"
   /api/users/{username}/repositories:
     $ref: "./paths/users.yaml#/userRepositoriesPath"
   /api/repositories:

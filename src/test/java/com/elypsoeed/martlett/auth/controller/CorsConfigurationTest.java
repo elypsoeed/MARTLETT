@@ -30,6 +30,16 @@ public class CorsConfigurationTest {
 	}
 
 	@Test
+	void avatarUpdateSuccess() {
+		Response response = preflight(ALLOWED_ORIGIN, "PUT", "/api/me/avatar");
+
+		assertThat(response.statusCode()).isEqualTo(200);
+		assertThat(response.getHeader("Access-Control-Allow-Origin")).isEqualTo(ALLOWED_ORIGIN);
+		assertThat(response.getHeader("Access-Control-Allow-Methods")).contains("PUT");
+		assertThat(response.getHeader("Access-Control-Allow-Headers")).contains("Content-Type");
+	}
+
+	@Test
 	void noAccess() {
 		Response response = preflight(DISALLOWED_ORIGIN, "PATCH", "/api/me");
 
