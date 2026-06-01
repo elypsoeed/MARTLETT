@@ -113,6 +113,20 @@ tasks.register<Exec>("composeUpDev") {
     )
 }
 
+tasks.register<Exec>("composeDownDevVolumes") {
+    group = "docker-compose"
+    description = "Stop development environment and remove local project volumes"
+    executable = "docker"
+    args(
+        "compose",
+        "--project-directory", ".",
+        "--env-file", ".env",
+        "-f", "docker-compose/docker-compose.yml",
+        "-f", "docker-compose/docker-compose.dev.yml",
+        "down", "-v"
+    )
+}
+
 
 val openApiOutputDir = layout.buildDirectory.dir("generated/openapi")
 
