@@ -31,9 +31,9 @@ public class GetRepositoryRawBlobTest {
 		TestUser owner = testData.createAuthedUser(testInfo);
 		testData.createPrivateRepository(owner, REPOSITORY_NAME);
 
-		Response response = get(owner.username(), REPOSITORY_NAME, "README.md");
+		Response response = get(owner.username());
 
-		assertThat(response.statusCode()).isEqualTo(401);
+		assertThat(response.statusCode()).isEqualTo(403);
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class GetRepositoryRawBlobTest {
 		TestUser stranger = testData.createAuthedUser(testInfo);
 		testData.createPrivateRepository(owner, REPOSITORY_NAME);
 
-		Response response = getAuthenticated(stranger.accessToken(), owner.username(), REPOSITORY_NAME, "README.md");
+		Response response = getAuthenticated(stranger.accessToken(), owner.username(), "README.md");
 
 		assertThat(response.statusCode()).isEqualTo(403);
 	}
@@ -59,7 +59,7 @@ public class GetRepositoryRawBlobTest {
 			Map.of("README.md", "hello")
 		);
 
-		Response response = getAuthenticated(owner.accessToken(), owner.username(), REPOSITORY_NAME, "README.md");
+		Response response = getAuthenticated(owner.accessToken(), owner.username(), "README.md");
 
 		assertThat(response.statusCode()).isEqualTo(200);
 		assertThat(response.asByteArray()).containsExactly("hello".getBytes());
@@ -77,30 +77,29 @@ public class GetRepositoryRawBlobTest {
 			Map.of("README.md", "hello")
 		);
 
-		Response response = getAuthenticated(owner.accessToken(), owner.username(), REPOSITORY_NAME, "missing.txt");
+		Response response = getAuthenticated(owner.accessToken(), owner.username(), "missing.txt");
 
 		assertThat(response.statusCode()).isEqualTo(404);
 	}
 
-	private Response get(String username, String repositoryName, String path) {
-		return executeGet(request(), username, repositoryName, path);
+	private Response get(String username) {
+		return executeGet(request(), username, "README.md");
 	}
 
-	private Response getAuthenticated(String accessToken, String username, String repositoryName, String path) {
+	private Response getAuthenticated(String accessToken, String username, String path) {
 		return executeGet(
 			request().auth().oauth2(accessToken),
 			username,
-			repositoryName,
-			path
+                path
 		);
 	}
 
-	private Response executeGet(RequestSpecification request, String username, String repositoryName, String path) {
+	private Response executeGet(RequestSpecification request, String username, String path) {
 		return request
 			.queryParam("ref", "master")
 			.queryParam("path", path)
 			.when()
-			.get("/api/repositories/" + username + "/" + repositoryName + "/blob/raw")
+			.get("/api/repositories/" + username + "/" + GetRepositoryRawBlobTest.REPOSITORY_NAME + "/blob/raw")
 			.then()
 			.extract()
 			.response();

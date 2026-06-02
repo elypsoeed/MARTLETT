@@ -31,9 +31,9 @@ public class GetRepositoryCommitsTest {
 		TestUser owner = testData.createAuthedUser(testInfo);
 		testData.createPrivateRepository(owner, REPOSITORY_NAME);
 
-		Response response = get(owner.username(), REPOSITORY_NAME);
+		Response response = get(owner.username());
 
-		assertThat(response.statusCode()).isEqualTo(401);
+		assertThat(response.statusCode()).isEqualTo(403);
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class GetRepositoryCommitsTest {
 		TestUser stranger = testData.createAuthedUser(testInfo);
 		testData.createPrivateRepository(owner, REPOSITORY_NAME);
 
-		Response response = getAuthenticated(stranger.accessToken(), owner.username(), REPOSITORY_NAME);
+		Response response = getAuthenticated(stranger.accessToken(), owner.username());
 
 		assertThat(response.statusCode()).isEqualTo(403);
 	}
@@ -59,7 +59,7 @@ public class GetRepositoryCommitsTest {
 			Map.of("src/App.java", "class App {}")
 		);
 
-		Response response = getAuthenticated(owner.accessToken(), owner.username(), REPOSITORY_NAME);
+		Response response = getAuthenticated(owner.accessToken(), owner.username());
 
 		assertThat(response.statusCode()).isEqualTo(200);
 		assertThat(response.jsonPath().getList("message", String.class)).containsExactly("Seed repository");
@@ -82,10 +82,8 @@ public class GetRepositoryCommitsTest {
 
 		Response response = getAuthenticatedWithPath(
 			owner.accessToken(),
-			owner.username(),
-			REPOSITORY_NAME,
-			"src/App.java"
-		);
+			owner.username()
+        );
 
 		assertThat(response.statusCode()).isEqualTo(200);
 		assertThat(response.jsonPath().getList("message", String.class)).containsExactly("Seed repository");
@@ -95,37 +93,35 @@ public class GetRepositoryCommitsTest {
 	void missingRepository(TestInfo testInfo) {
 		TestUser owner = testData.createAuthedUser(testInfo);
 
-		Response response = getAuthenticated(owner.accessToken(), owner.username(), REPOSITORY_NAME);
+		Response response = getAuthenticated(owner.accessToken(), owner.username());
 
 		assertThat(response.statusCode()).isEqualTo(404);
 	}
 
-	private Response get(String username, String repositoryName) {
-		return executeGet(request(), username, repositoryName);
+	private Response get(String username) {
+		return executeGet(request(), username);
 	}
 
-	private Response getAuthenticated(String accessToken, String username, String repositoryName) {
+	private Response getAuthenticated(String accessToken, String username) {
 		RequestSpecification request = request();
 		request.auth().oauth2(accessToken);
-		return executeGet(request, username, repositoryName);
+		return executeGet(request, username);
 	}
 
 	private Response getAuthenticatedWithPath(
 		String accessToken,
-		String username,
-		String repositoryName,
-		String path
+		String username
 	) {
 		RequestSpecification request = request();
 		request.auth().oauth2(accessToken);
-		return executeGetWithPath(request, username, repositoryName, path);
+		return executeGetWithPath(request, username);
 	}
 
-	private Response executeGet(RequestSpecification request, String username, String repositoryName) {
+	private Response executeGet(RequestSpecification request, String username) {
 		return request
 			.queryParam("ref", "master")
 			.when()
-			.get("/api/repositories/" + username + "/" + repositoryName + "/commits")
+			.get("/api/repositories/" + username + "/" + GetRepositoryCommitsTest.REPOSITORY_NAME + "/commits")
 			.then()
 			.extract()
 			.response();
@@ -133,15 +129,13 @@ public class GetRepositoryCommitsTest {
 
 	private Response executeGetWithPath(
 		RequestSpecification request,
-		String username,
-		String repositoryName,
-		String path
+		String username
 	) {
 		return request
 			.queryParam("ref", "master")
-			.queryParam("path", path)
+			.queryParam("path", "src/App.java")
 			.when()
-			.get("/api/repositories/" + username + "/" + repositoryName + "/commits")
+			.get("/api/repositories/" + username + "/" + GetRepositoryCommitsTest.REPOSITORY_NAME + "/commits")
 			.then()
 			.extract()
 			.response();

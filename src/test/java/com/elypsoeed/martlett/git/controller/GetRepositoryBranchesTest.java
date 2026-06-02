@@ -31,7 +31,7 @@ public class GetRepositoryBranchesTest {
 
 		Response response = get(owner.username());
 
-		assertThat(response.statusCode()).isEqualTo(401);
+		assertThat(response.statusCode()).isEqualTo(403);
 	}
 
 	@Test

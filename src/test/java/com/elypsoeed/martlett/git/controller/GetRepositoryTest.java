@@ -27,9 +27,9 @@ public class GetRepositoryTest {
 		TestUser owner = testData.createAuthedUser(testInfo);
 		testData.createPrivateRepository(owner, "private-repository");
 
-		Response response = get(owner.username(), "private-repository");
+		Response response = get(owner.username());
 
-		assertThat(response.statusCode()).isEqualTo(401);
+		assertThat(response.statusCode()).isEqualTo(403);
 	}
 
 	@Test
@@ -69,8 +69,8 @@ public class GetRepositoryTest {
 		assertThat(response.statusCode()).isEqualTo(404);
 	}
 
-	private Response get(String username, String repositoryName) {
-		return executeGet(request(), username, repositoryName);
+	private Response get(String username) {
+		return executeGet(request(), username, "private-repository");
 	}
 
 	private Response getAuthed(String accessToken, String username, String repositoryName) {
