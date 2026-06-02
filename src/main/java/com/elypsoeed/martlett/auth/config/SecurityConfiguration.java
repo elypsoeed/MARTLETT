@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -63,10 +64,14 @@ public class SecurityConfiguration {
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/api/auth/register", "/api/auth/token", "/api/auth/refresh", "/actuator/health").permitAll()
+				.requestMatchers("/api/auth/register", "/api/auth/token", "/api/auth/refresh", "/actuator/health", "/error").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/users/*").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/users/*/avatar").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/users/*/repositories").permitAll()
+				.requestMatchers(new RegexRequestMatcher(
+					"^/api/repositories/[^/]+/[^/]+(?:/(?:branches|tree|blob(?:/raw)?|readme|commits))?(?:\\?.*)?$",
+					HttpMethod.GET.name()
+				)).permitAll()
 				.anyRequest().authenticated()
 			)
 			.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt

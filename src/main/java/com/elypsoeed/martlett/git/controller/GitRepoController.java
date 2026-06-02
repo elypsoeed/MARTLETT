@@ -79,7 +79,7 @@ public class GitRepoController {
 		return ResponseEntity.ok(gitRepoResponseMapper.toRepositoryResponse(gitRepoReadService.getRepository(
 			username,
 			repositoryName,
-			currentUserProvider.username()
+			currentUserProvider.optionalUsername()
 		)));
 	}
 
@@ -91,7 +91,7 @@ public class GitRepoController {
 		return ResponseEntity.ok(gitRepoReadService.getRepositoryBranches(
 			username,
 			repositoryName,
-			currentUserProvider.username()
+			currentUserProvider.optionalUsername()
 		).stream().map(gitRepoResponseMapper::toBranchResponse).toList());
 	}
 
@@ -105,7 +105,7 @@ public class GitRepoController {
 		return ResponseEntity.ok(gitRepoResponseMapper.toTreeResponse(gitRepoReadService.getRepositoryTree(
 			username,
 			repositoryName,
-			currentUserProvider.username(),
+			currentUserProvider.optionalUsername(),
 			ref,
 			path
 		)));
@@ -121,7 +121,7 @@ public class GitRepoController {
 		return ResponseEntity.ok(gitRepoResponseMapper.toBlobResponse(gitRepoReadService.getRepositoryBlob(
 			username,
 			repositoryName,
-			currentUserProvider.username(),
+			currentUserProvider.optionalUsername(),
 			ref,
 			path
 		)));
@@ -137,7 +137,7 @@ public class GitRepoController {
 		return ResponseEntity.ok(gitRepoReadService.getRepositoryRawBlob(
 			username,
 			repositoryName,
-			currentUserProvider.username(),
+			currentUserProvider.optionalUsername(),
 			ref,
 			path
 		).content());
@@ -152,7 +152,7 @@ public class GitRepoController {
 		return ResponseEntity.ok(gitRepoResponseMapper.toBlobResponse(gitRepoReadService.getRepositoryReadme(
 			username,
 			repositoryName,
-			currentUserProvider.username(),
+			currentUserProvider.optionalUsername(),
 			ref
 		)));
 	}
@@ -168,7 +168,7 @@ public class GitRepoController {
 		return ResponseEntity.ok(gitRepoReadService.getRepositoryCommits(
 			username,
 			repositoryName,
-			currentUserProvider.username(),
+			currentUserProvider.optionalUsername(),
 			ref,
 			path,
 			limit

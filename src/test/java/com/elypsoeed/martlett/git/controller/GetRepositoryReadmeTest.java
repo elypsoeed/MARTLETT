@@ -4,6 +4,8 @@ import com.elypsoeed.martlett.IntegrationTest;
 import com.elypsoeed.martlett.common.testdata.TestData;
 import com.elypsoeed.martlett.common.testdata.TestDataProperties;
 import com.elypsoeed.martlett.common.testdata.model.TestUser;
+import com.elypsoeed.martlett.generated.model.CreateRepositoryRequest;
+import com.elypsoeed.martlett.generated.model.RepositoryVisibility;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class GetRepositoryReadmeTest {
 
 		Response response = get(owner.username(), REPOSITORY_NAME);
 
-		assertThat(response.statusCode()).isEqualTo(401);
+		assertThat(response.statusCode()).isEqualTo(403);
 	}
 
 	@Test
@@ -42,7 +44,7 @@ public class GetRepositoryReadmeTest {
 		TestUser stranger = testData.createAuthedUser(testInfo);
 		testData.createPrivateRepository(owner, REPOSITORY_NAME);
 
-		Response response = getAuthenticated(stranger.accessToken(), owner.username(), REPOSITORY_NAME);
+		Response response = getAuthenticated(stranger.accessToken(), owner.username());
 
 		assertThat(response.statusCode()).isEqualTo(403);
 	}
@@ -59,11 +61,32 @@ public class GetRepositoryReadmeTest {
 			Map.of("README.md", "# Project")
 		);
 
-		Response response = getAuthenticated(owner.accessToken(), owner.username(), REPOSITORY_NAME);
+		Response response = getAuthenticated(owner.accessToken(), owner.username());
 
 		assertThat(response.statusCode()).isEqualTo(200);
 		assertThat(response.jsonPath().getString("name")).isEqualTo("README.md");
 		assertThat(response.jsonPath().getString("content")).isEqualTo("# Project");
+	}
+
+	@Test
+	void successPublicNoAuth(TestInfo testInfo, @TempDir Path tempDir) throws Exception {
+		TestUser owner = testData.createAuthedUser(testInfo);
+		testData.createRepositoryFromRequest(owner, new CreateRepositoryRequest()
+			.name("public-readme-repository")
+			.visibility(RepositoryVisibility.PUBLIC));
+		testData.pushFiles(
+			owner,
+			owner.username(),
+			"public-readme-repository",
+			tempDir.resolve("repository"),
+			Map.of("README.md", "# Public Project")
+		);
+
+		Response response = get(owner.username(), "public-readme-repository");
+
+		assertThat(response.statusCode()).isEqualTo(200);
+		assertThat(response.jsonPath().getString("name")).isEqualTo("README.md");
+		assertThat(response.jsonPath().getString("content")).isEqualTo("# Public Project");
 	}
 
 	@Test
@@ -78,7 +101,26 @@ public class GetRepositoryReadmeTest {
 			Map.of("src/App.java", "class App {}")
 		);
 
-		Response response = getAuthenticated(owner.accessToken(), owner.username(), REPOSITORY_NAME);
+		Response response = getAuthenticated(owner.accessToken(), owner.username());
+
+		assertThat(response.statusCode()).isEqualTo(404);
+	}
+
+	@Test
+	void missingPublicReadmeNoAuth(TestInfo testInfo, @TempDir Path tempDir) throws Exception {
+		TestUser owner = testData.createAuthedUser(testInfo);
+		testData.createRepositoryFromRequest(owner, new CreateRepositoryRequest()
+			.name("public-missing-readme-repository")
+			.visibility(RepositoryVisibility.PUBLIC));
+		testData.pushFiles(
+			owner,
+			owner.username(),
+			"public-missing-readme-repository",
+			tempDir.resolve("repository"),
+			Map.of("src/App.java", "class App {}")
+		);
+
+		Response response = get(owner.username(), "public-missing-readme-repository");
 
 		assertThat(response.statusCode()).isEqualTo(404);
 	}
@@ -87,7 +129,7 @@ public class GetRepositoryReadmeTest {
 	void missingRepository(TestInfo testInfo) {
 		TestUser owner = testData.createAuthedUser(testInfo);
 
-		Response response = getAuthenticated(owner.accessToken(), owner.username(), REPOSITORY_NAME);
+		Response response = getAuthenticated(owner.accessToken(), owner.username());
 
 		assertThat(response.statusCode()).isEqualTo(404);
 	}
@@ -96,11 +138,11 @@ public class GetRepositoryReadmeTest {
 		return executeGet(request(), username, repositoryName);
 	}
 
-	private Response getAuthenticated(String accessToken, String username, String repositoryName) {
+	private Response getAuthenticated(String accessToken, String username) {
 		return executeGet(
 			request().auth().oauth2(accessToken),
 			username,
-			repositoryName
+                GetRepositoryReadmeTest.REPOSITORY_NAME
 		);
 	}
 
